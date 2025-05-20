@@ -1,0 +1,240 @@
+/* BonusBridgeExplanation.css - Mobile-Optimized Version */
+
+.bonus-bridge-explanation {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 1001;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 5px;
+}
+
+.explanation-content {
+  width: 95%;
+  height: 90vh;
+  max-width: 450px; /* REDUCED from 700px for mobile */
+  background-color: white;
+  border-radius: 10px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.explanation-header {
+  background-color: #1e5c8b;
+  color: white;
+  padding: 10px 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.explanation-header h2 {
+  font-size: 16px; /* REDUCED from 18px */
+  margin: 0;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 5px;
+  min-width: 30px;
+  min-height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.close-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.explanation-tabs {
+  display: flex;
+  background-color: #f5f5f5;
+  border-bottom: 1px solid #ddd;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  flex-shrink: 0;
+}
+
+.explanation-tabs .tab-btn {
+  padding: 8px 6px; /* REDUCED padding */
+  font-size: 12px; /* REDUCED from 14px */
+  min-width: 70px; /* REDUCED from 100px */
+  flex: 1; /* Equal width tabs */
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  font-weight: bold;
+  color: #555;
+  cursor: pointer;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.explanation-tabs .tab-btn.active {
+  color: #1e5c8b;
+  border-bottom-color: #1e5c8b;
+  background-color: white;
+}
+
+.explanation-body {
+  flex: 1;
+  padding: 12px; /* REDUCED from 15px */
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Tab Content Styling - Mobile Optimized */
+.explanation-body h3 {
+  color: #1e5c8b;
+  margin: 12px 0 8px 0; /* REDUCED margins */
+  font-size: 16px; /* REDUCED from 18px */
+}
+
+.explanation-body h3:first-child {
+  margin-top: 0;
+}
+
+.explanation-body p {
+  margin: 0 0 10px 0;
+  line-height: 1.4; /* REDUCED from 1.5 */
+  font-size: 14px; /* EXPLICITLY set smaller */
+}
+
+.explanation-body ul {
+  margin: 0 0 12px 0; /* REDUCED margin */
+  padding-left: 18px; /* REDUCED from 20px */
+}
+
+.explanation-body li {
+  margin-bottom: 4px; /* REDUCED from 5px */
+  line-height: 1.3; /* REDUCED line height */
+  font-size: 14px; /* EXPLICITLY set smaller */
+}
+
+.explanation-body li ul {
+  margin: 4px 0; /* REDUCED from 5px */
+}
+
+.formula {
+  background-color: #f5f5f5;
+  padding: 8px; /* REDUCED from 10px */
+  border-left: 3px solid #1e5c8b;
+  font-weight: bold;
+  margin: 8px 0; /* REDUCED from 10px */
+  border-radius: 0 4px 4px 0;
+  font-size: 13px; /* SMALLER font */
+}
+
+/* Tables - Mobile Optimized */
+.expected-hcp-table {
+  width: 100%;
+  margin: 10px 0; /* REDUCED from 15px */
+  font-size: 12px; /* REDUCED from 14px */
+  border-collapse: collapse;
+}
+
+.expected-hcp-table th, 
+.expected-hcp-table td {
+  padding: 6px 4px; /* REDUCED from 8px 5px */
+  text-align: left;
+  border: 1px solid #ddd;
+}
+
+.expected-hcp-table th {
+  background-color: #f2f6f9;
+  font-weight: bold;
+  font-size: 12px;
+}
+
+/* Example Scenarios - Compact */
+.example-scenario, 
+.example-calculation {
+  background-color: #f9f9f9;
+  padding: 8px; /* REDUCED from 10px */
+  margin-bottom: 10px; /* REDUCED from 15px */
+  border-radius: 5px;
+  border: 1px solid #eee;
+}
+
+.example-scenario p, 
+.example-calculation p {
+  margin: 3px 0; /* REDUCED from 5px */
+  font-size: 13px; /* SMALLER font */
+}
+
+.example-calculation {
+  background-color: #f0f7ff;
+  border-color: #d9e9ff;
+}
+
+/* Very small screens */
+@media (max-width: 375px) {
+  .explanation-content {
+    width: 98%;
+    max-width: none;
+  }
+  
+  .explanation-header h2 {
+    font-size: 15px;
+  }
+  
+  .explanation-tabs .tab-btn {
+    padding: 6px 4px;
+    font-size: 11px;
+    min-width: 60px;
+  }
+  
+  .explanation-body {
+    padding: 8px;
+  }
+  
+  .explanation-body h3 {
+    font-size: 15px;
+  }
+  
+  .explanation-body p,
+  .explanation-body li {
+    font-size: 13px;
+  }
+  
+  .expected-hcp-table th, 
+  .expected-hcp-table td {
+    padding: 4px 2px;
+    font-size: 11px;
+  }
+  
+  .formula {
+    font-size: 12px;
+    padding: 6px;
+  }
+}
+
+/* Landscape mode for phones */
+@media (orientation: landscape) and (max-height: 500px) {
+  .explanation-content {
+    height: 95vh;
+    max-width: 500px;
+  }
+  
+  .explanation-body {
+    padding: 8px;
+  }
+  
+  .explanation-tabs .tab-btn {
+    padding: 6px 8px;
+    font-size: 11px;
+  }
+}

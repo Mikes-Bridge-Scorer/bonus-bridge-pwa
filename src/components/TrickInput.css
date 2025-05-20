@@ -1,0 +1,243 @@
+/* TrickInput.css - Balanced 5x3 grid layout */
+
+.trick-input {
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.required-tricks {
+  font-size: 14px;
+  color: #1e5c8b;
+  margin-bottom: 8px;
+  font-weight: bold;
+  padding: 8px;
+  background-color: #f2f8ff;
+  border: 1px solid #d0e1f9;
+  border-radius: 6px;
+  display: block;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+/* 5-column, 3-row grid for perfectly balanced layout */
+.trick-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 6px;
+  margin-bottom: 8px;
+  flex-shrink: 0;
+}
+
+/* Empty grid cell styling */
+.trick-grid-empty {
+  /* Just an empty div to fill the grid space */
+}
+
+/* Compact buttons optimized for mobile */
+.trick-btn {
+  height: 40px;
+  font-size: 16px;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid transparent;
+  transition: all 0.15s ease;
+  position: relative;
+}
+
+/* Button background colors based on relationship to required tricks */
+.trick-btn-down {
+  background-color: #ffebee;
+  border-color: #ffcdd2;
+  color: #c62828;
+}
+
+.trick-btn-exact {
+  background-color: #fff3e0;
+  border-color: #ffe0b2;
+  color: #e65100;
+  font-weight: bold;
+}
+
+.trick-btn-made {
+  background-color: #e8f5e9;
+  border-color: #c8e6c9;
+  color: #2e7d32;
+}
+
+/* Selected state styles with better visual feedback */
+.trick-btn.selected {
+  border-width: 2px;
+  color: white;
+  transform: scale(0.98);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.trick-btn-down.selected {
+  background-color: #f44336;
+  border-color: #d32f2f;
+}
+
+.trick-btn-exact.selected {
+  background-color: #ff9800;
+  border-color: #f57c00;
+}
+
+.trick-btn-made.selected {
+  background-color: #4caf50;
+  border-color: #388e3c;
+}
+
+/* Hover effects for better UX */
+.trick-btn:hover:not(.selected) {
+  opacity: 0.8;
+  transform: translateY(-1px);
+}
+
+.trick-btn:active {
+  transform: scale(0.95);
+}
+
+/* Result preview - takes remaining space */
+.result-preview {
+  padding: 12px;
+  margin: 8px 0;
+  border-radius: 8px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 16px;
+  border: 2px solid;
+  animation: fadeIn 0.3s ease;
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60px;
+}
+
+.result-preview.down {
+  background-color: #ffebee;
+  border-color: #f44336;
+  color: #c62828;
+}
+
+.result-preview.exact {
+  background-color: #fff3e0;
+  border-color: #ff9800;
+  color: #e65100;
+}
+
+.result-preview.made {
+  background-color: #e8f5e9;
+  border-color: #4caf50;
+  color: #2e7d32;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Change Contract Button - positioned at bottom */
+.change-contract-btn {
+  width: 100%;
+  height: 44px;
+  margin-top: auto;
+  padding-top: 8px;
+  background-color: #f5f5f5;
+  color: #2c3e50;
+  font-size: 15px;
+  font-weight: bold;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.change-contract-btn:hover {
+  background-color: #e8e8e8;
+  transform: translateY(-1px);
+}
+
+.change-contract-btn:active {
+  background-color: #d8d8d8;
+  transform: scale(0.98);
+}
+
+/* Media queries for different screen sizes */
+@media (max-width: 375px) {
+  .trick-btn {
+    height: 36px;
+    font-size: 15px;
+  }
+  
+  .required-tricks {
+    font-size: 13px;
+    padding: 6px;
+  }
+  
+  .change-contract-btn {
+    height: 36px;
+    font-size: 13px;
+  }
+  
+  .result-preview {
+    font-size: 14px;
+    padding: 6px;
+  }
+}
+
+@media (max-width: 320px) {
+  .trick-btn {
+    height: 34px;
+    font-size: 14px;
+  }
+  
+  .trick-grid {
+    gap: 4px;
+  }
+  
+  .result-preview {
+    font-size: 13px;
+  }
+}
+
+/* Landscape mode optimization */
+@media (orientation: landscape) and (max-height: 500px) {
+  .trick-btn {
+    height: 32px;
+    font-size: 14px;
+  }
+  
+  .required-tricks {
+    padding: 4px;
+    font-size: 12px;
+    margin-bottom: 6px;
+  }
+  
+  .result-preview {
+    padding: 4px;
+    margin: 4px 0;
+    font-size: 13px;
+  }
+  
+  .change-contract-btn {
+    height: 32px;
+    margin-top: 4px;
+  }
+}

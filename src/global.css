@@ -1,0 +1,687 @@
+/* global.css - Complete file with score popup fix */
+
+:root {
+  --primary-color: #1e5c8b;
+  --secondary-color: #468bbf;
+  --light-blue: #e8f4ff;
+  --dark-blue: #18476b;
+  --success-color: #3c8c5c;
+  --warning-color: #f39c12;
+  --danger-color: #e74c3c;
+  --selected-color: #55aaee;
+  --dark-selected-color: #3884b8;
+  --border-color: #d0d0d0;
+  --button-radius: 4px;
+  --red-color: #d32f2f;
+  --pale-yellow: #fff8e1;
+  --pale-green: #e8f5e9;
+  --pale-pink: #f9e8e8;
+  --selection-border: #333333;
+  --container-border: #000000;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  width: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  overflow: hidden;
+  background-color: #f2f2f2;
+}
+
+#root {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* App container - optimized for mobile */
+.app-container {
+  height: 100%;
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  padding: 0 5px;
+}
+
+/* Bridge Game Container with black border */
+.bridge-game-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  border: 3px solid var(--container-border);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  background-color: white;
+  margin: 10px 0;
+}
+
+/* Header Layout */
+.game-header {
+  background-color: var(--primary-color);
+  color: white;
+  padding: 10px;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.game-header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.game-info-left, .game-info-right {
+  font-weight: bold;
+  font-size: 15px;
+}
+
+.game-title {
+  text-align: center;
+}
+
+.game-title h1 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.vulnerability-info {
+  text-align: right;
+  font-style: italic;
+  font-size: 14px;
+}
+
+/* Game Board - optimized for mobile */
+.game-board {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--light-blue);
+  padding: 0;
+  overflow-y: auto;
+  gap: 6px;
+  min-height: 0;
+}
+
+/* Contract Container - more compact */
+.contract-container {
+  background-color: white;
+  padding: 10px;
+  margin: 8px 10px;
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+}
+
+.contract-label {
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: var(--dark-blue);
+}
+
+/* Level, Suit, Declarer, Doubled Row Styling */
+.level-row, .suit-row, .declarer-row, .doubled-row {
+  display: flex;
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.level-row button, .suit-row button, .declarer-row button, .doubled-row button {
+  flex: 1;
+  height: 45px;
+  font-size: 16px;
+  border: 1px solid var(--border-color);
+  background-color: #f5f5f5;
+  border-radius: var(--button-radius);
+  margin: 1px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+/* Red suit coloring */
+.suit-row button:nth-child(2), 
+.suit-row button:nth-child(3),
+.declarer-row button:nth-child(2), 
+.declarer-row button:nth-child(3),
+.doubled-row button:nth-child(2),
+.doubled-row button:nth-child(3) {
+  color: var(--red-color);
+}
+
+/* Button states */
+button.selected {
+  background-color: var(--selected-color);
+  color: white !important;
+  border-color: var(--dark-selected-color);
+  font-weight: bold;
+}
+
+button:active {
+  background-color: #e8e8e8;
+}
+
+/* Current contract display - more compact */
+.current-contract-display {
+  text-align: center;
+  font-weight: bold;
+  padding: 8px;
+  background-color: #e5f0fb;
+  border: 1px solid var(--secondary-color);
+  margin: 6px 10px;
+  border-radius: var(--button-radius);
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+/* Result display - more compact */
+.result-display {
+  text-align: center;
+  font-weight: bold;
+  padding: 8px;
+  background-color: #d5e9fa;
+  margin: 6px 10px;
+  border-radius: var(--button-radius);
+  border: 1px solid var(--secondary-color);
+  flex-shrink: 0;
+}
+
+.result-text {
+  padding: 5px;
+}
+
+/* Tricks Container - much more compact */
+.tricks-container {
+  background-color: white;
+  padding: 8px;
+  margin: 6px 10px;
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+}
+
+.tricks-label {
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: var(--dark-blue);
+  font-size: 16px;
+}
+
+/* Required tricks - compact */
+.required-tricks {
+  display: inline-block;
+  font-size: 14px;
+  margin-bottom: 8px;
+  color: var(--dark-blue);
+  background-color: #f2f8ff;
+  padding: 6px 10px;
+  border-radius: var(--button-radius);
+  border: 1px solid #d0e1f9;
+}
+
+/* Footer Controls - fixed height */
+.game-controls {
+  background-color: var(--primary-color);
+  padding: 10px;
+  height: 110px;
+  flex-shrink: 0;
+}
+
+/* Equal height button rows */
+.top-controls, .bottom-controls {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 8px;
+  height: 42px;
+}
+
+.bottom-controls {
+  margin-bottom: 0;
+}
+
+/* Equal size buttons */
+.keep-awake-btn, .score-btn, .quit-btn, .new-game-btn {
+  flex: 1;
+  height: 100% !important;
+  font-size: 16px;
+  border: none;
+  border-radius: var(--button-radius);
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+.keep-awake-btn {
+  background-color: var(--success-color);
+}
+
+.keep-awake-btn.active {
+  background-color: var(--success-color);
+  opacity: 0.9;
+}
+
+.score-btn {
+  background-color: var(--secondary-color);
+}
+
+.quit-btn {
+  background-color: var(--danger-color);
+}
+
+.new-game-btn {
+  background-color: var(--warning-color);
+}
+
+/* FIXED: Score popup with proper close button positioning */
+.score-popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.score-popup-content {
+  background-color: white;
+  width: 90%;
+  max-width: 400px;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.score-popup-content h2 {
+  background-color: var(--primary-color);
+  color: white;
+  padding: 10px 15px;
+  font-size: 18px;
+  margin: 0;
+  border-bottom: 1px solid #1a4e7d;
+  flex-shrink: 0;
+}
+
+.score-tracking {
+  padding: 15px;
+  overflow-y: auto;
+  flex-grow: 1;
+}
+
+.score-tracking h3 {
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+.score-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 15px;
+}
+
+.score-table th {
+  text-align: left;
+  font-weight: bold;
+  padding-bottom: 5px;
+}
+
+.score-table td {
+  padding: 3px 0;
+}
+
+.contract-info {
+  margin: 15px 0;
+}
+
+.contract-info div {
+  margin-bottom: 5px;
+}
+
+/* FIXED: Close button stays within popup */
+.close-btn {
+  width: 100%;
+  background-color: var(--secondary-color);
+  color: white;
+  border: none;
+  border-radius: 0;
+  padding: 12px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  flex-shrink: 0;
+  margin: 0;
+  position: static;
+}
+
+.close-btn:hover {
+  background-color: #3a7ca8;
+}
+
+.close-btn:active {
+  background-color: #2e6384;
+}
+
+/* Media queries for smaller screens */
+@media (max-width: 375px) {
+  .level-row button, .suit-row button, .declarer-row button, .doubled-row button {
+    height: 40px;
+    font-size: 15px;
+  }
+  
+  .game-title h1 {
+    font-size: 18px;
+  }
+  
+  .game-info-left, .game-info-right {
+    font-size: 14px;
+  }
+  
+  .game-controls {
+    height: 100px;
+  }
+  
+  .top-controls, .bottom-controls {
+    height: 38px;
+  }
+  
+  .keep-awake-btn, .score-btn, .quit-btn, .new-game-btn {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 320px) {
+  .level-row button, .suit-row button, .declarer-row button, .doubled-row button {
+    height: 38px;
+    font-size: 14px;
+  }
+  
+  .keep-awake-btn, .score-btn, .quit-btn, .new-game-btn {
+    font-size: 13px;
+  }
+  
+  .game-board {
+    gap: 4px;
+  }
+  
+  .tricks-container,
+  .contract-container {
+    margin: 4px 8px;
+    padding: 6px;
+  }
+}
+
+/* Landscape mode optimization */
+@media (orientation: landscape) and (max-height: 500px) {
+  .game-header {
+    padding: 6px;
+  }
+  
+  .game-controls {
+    height: 90px;
+    padding: 6px;
+  }
+  
+  .top-controls, .bottom-controls {
+    height: 36px;
+    margin-bottom: 6px;
+  }
+  
+  .game-board {
+    gap: 4px;
+  }
+  
+  .tricks-container,
+  .contract-container,
+  .current-contract-display,
+  .result-display {
+    margin: 4px 8px;
+    padding: 6px;
+  }
+}
+
+/* Additional styling for ScoreTracking component */
+.score-tracking {
+  padding: 15px;
+}
+
+.score-summary {
+  margin-bottom: 20px;
+}
+
+.score-summary h3 {
+  margin-bottom: 10px;
+  font-size: 16px;
+  color: var(--primary-color);
+}
+
+.score-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 15px;
+}
+
+.score-table th {
+  text-align: left;
+  font-weight: bold;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #ddd;
+  color: var(--dark-blue);
+}
+
+.score-table td {
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.contract-info {
+  margin: 15px 0;
+  background-color: #f5f5f5;
+  padding: 10px;
+  border-radius: var(--button-radius);
+  border: 1px solid #ddd;
+}
+
+.contract-info div {
+  margin-bottom: 5px;
+}
+
+.scoring-options {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.bonus-bridge-btn,
+.party-bridge-btn {
+  padding: 12px;
+  border: none;
+  border-radius: var(--button-radius);
+  font-weight: bold;
+  cursor: pointer;
+  text-align: center;
+}
+
+.bonus-bridge-btn {
+  background-color: var(--success-color);
+  color: white;
+}
+
+.party-bridge-btn {
+  background-color: var(--secondary-color);
+  color: white;
+}
+
+/* Make sure disabled state is visible */
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Updated responsive styles for larger screens */
+@media (min-width: 768px) {
+  .bridge-game-container {
+    max-width: 520px;
+    margin: 0 auto;
+    border: 3px solid var(--container-border);
+  }
+  
+  .score-popup-content {
+    max-width: 450px;
+  }
+}
+/* ADD THIS TO THE END OF YOUR global.css FILE */
+
+/* Force the close button to appear in score popup */
+.score-popup .close-btn {
+  width: 100% !important;
+  background-color: #468bbf !important;
+  color: white !important;
+  border: none !important;
+  padding: 12px !important;
+  font-size: 16px !important;
+  font-weight: bold !important;
+  cursor: pointer !important;
+  margin: 0 !important;
+  display: block !important;
+  position: static !important;
+  bottom: auto !important;
+  left: auto !important;
+  right: auto !important;
+}
+
+.score-popup .close-btn:hover {
+  background-color: #3a7ca8 !important;
+}
+
+/* Ensure popup content uses flexbox properly */
+.score-popup-content {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.score-tracking {
+  flex: 1 !important;
+  overflow-y: auto !important;
+}
+/* EMERGENCY FIX - Add this to the END of global.css */
+
+/* Force mobile popup styling */
+.bonus-bridge-explanation {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  background-color: rgba(0, 0, 0, 0.7) !important;
+  z-index: 1001 !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  padding: 5px !important;
+}
+
+.explanation-content {
+  width: 95% !important;
+  height: 90vh !important;
+  max-width: 450px !important;
+  background-color: white !important;
+  border-radius: 10px !important;
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.explanation-header {
+  background-color: #1e5c8b !important;
+  color: white !important;
+  padding: 10px 15px !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  flex-shrink: 0 !important;
+}
+
+.explanation-header h2 {
+  font-size: 16px !important;
+  margin: 0 !important;
+}
+
+.explanation-tabs {
+  display: flex !important;
+  background-color: #f5f5f5 !important;
+  border-bottom: 1px solid #ddd !important;
+  overflow-x: auto !important;
+  flex-shrink: 0 !important;
+}
+
+.explanation-tabs .tab-btn {
+  padding: 8px 6px !important;
+  font-size: 12px !important;
+  min-width: 70px !important;
+  flex: 1 !important;
+  background: none !important;
+  border: none !important;
+  border-bottom: 3px solid transparent !important;
+  font-weight: bold !important;
+  color: #555 !important;
+  cursor: pointer !important;
+  white-space: nowrap !important;
+  text-align: center !important;
+}
+
+.explanation-tabs .tab-btn.active {
+  color: #1e5c8b !important;
+  border-bottom-color: #1e5c8b !important;
+  background-color: white !important;
+}
+
+.explanation-body {
+  flex: 1 !important;
+  padding: 12px !important;
+  overflow-y: auto !important;
+}
+
+.explanation-body h3 {
+  color: #1e5c8b !important;
+  margin: 12px 0 8px 0 !important;
+  font-size: 16px !important;
+}
+
+.explanation-body p,
+.explanation-body li {
+  font-size: 14px !important;
+  line-height: 1.4 !important;
+}
+
+.expected-hcp-table {
+  font-size: 12px !important;
+}
+
+.expected-hcp-table th,
+.expected-hcp-table td {
+  padding: 6px 4px !important;
+}
+

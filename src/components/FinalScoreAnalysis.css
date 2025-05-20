@@ -1,0 +1,528 @@
+/* FinalScoreAnalysis.css - Updated with improved button layout and mobile UI */
+
+.final-score-analysis {
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f9f9f9;
+  border-radius: 0;
+}
+
+/* Header */
+.analysis-header {
+  background-color: #1e5c8b;
+  color: white;
+  padding: 12px 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 0;
+}
+
+.title-container h1 {
+  font-size: 20px;
+  margin: 0;
+}
+
+.title-container p {
+  font-size: 14px;
+  margin: 4px 0 0 0;
+  opacity: 0.9;
+}
+
+.header-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.info-btn, .scores-btn {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.info-btn {
+  width: 30px;
+  height: 30px;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.scores-btn {
+  padding: 6px 10px;
+  font-size: 14px;
+  white-space: nowrap;
+  font-weight: bold;
+}
+
+/* Contract Category Banner */
+.contract-category {
+  background-color: #2c3e50;
+  color: white;
+  padding: 10px 15px;
+  text-align: center;
+}
+
+.contract-category h2 {
+  font-size: 18px;
+  margin: 0;
+  font-weight: bold;
+}
+
+/* Contract Details */
+.contract-details {
+  background-color: white;
+  padding: 12px 15px;
+  border-bottom: 1px solid #ddd;
+}
+
+.contract-details p {
+  margin: 5px 0;
+  font-size: 16px;
+}
+
+/* Tab Navigation */
+.analysis-tabs {
+  display: flex;
+  background-color: #f5f5f5;
+  border-bottom: 1px solid #ddd;
+  overflow-x: auto; /* Enable horizontal scrolling if needed */
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+}
+
+.tab-btn {
+  padding: 12px;
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  font-size: 16px;
+  font-weight: bold;
+  color: #555;
+  flex: 1;
+  min-width: auto;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.tab-btn.active {
+  color: #1e5c8b;
+  border-bottom-color: #1e5c8b;
+}
+
+/* Tab Content */
+.tab-content {
+  padding: 15px;
+  background-color: white;
+}
+
+/* Summary Tab */
+.summary-tab {
+  display: flex;
+  flex-direction: column;
+}
+
+.final-scores {
+  margin-bottom: 20px;
+}
+
+.final-scores h3 {
+  font-size: 18px;
+  color: #1e5c8b;
+  margin: 0 0 10px 0;
+}
+
+.score-box {
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+}
+
+.score-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.score-row:last-child {
+  margin-bottom: 0;
+}
+
+.score-label {
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.score-value {
+  font-size: 18px;
+  font-weight: bold;
+  color: #1e5c8b;
+}
+
+.score-explanation {
+  font-size: 15px;
+  font-style: italic;
+  color: #555;
+}
+
+/* Hand Analysis Tab */
+.hand-tab h3 {
+  font-size: 18px;
+  color: #1e5c8b;
+  margin: 0 0 15px 0;
+}
+
+.analysis-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.detail-label {
+  font-size: 15px;
+}
+
+.detail-value {
+  font-weight: bold;
+  color: #1e5c8b;
+  font-size: 16px;
+}
+
+/* Calculation Tab */
+.calculation-tab h3 {
+  font-size: 18px;
+  color: #1e5c8b;
+  margin: 0 0 15px 0;
+}
+
+.calculation-steps {
+  margin-bottom: 20px;
+}
+
+.calc-step {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.step-label {
+  font-size: 15px;
+}
+
+.step-value {
+  font-weight: bold;
+  color: #1e5c8b;
+  font-size: 16px;
+}
+
+.final-calculation {
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  padding: 12px;
+  margin-top: 20px;
+  border: 1px solid #ddd;
+}
+
+.final-calculation h3 {
+  font-size: 18px;
+  color: #1e5c8b;
+  margin: 0 0 10px 0;
+}
+
+.final-calculation .calc-step {
+  border-bottom-color: #ddd;
+}
+
+.final-calculation .step-value {
+  font-size: 18px;
+}
+
+/* Action Buttons - New 3-button layout */
+.action-button-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 15px 15px 8px 15px;
+}
+
+.action-btn {
+  flex: 1;
+  height: 48px;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 15px;
+  cursor: pointer;
+  white-space: nowrap;
+  padding: 0 5px;
+}
+
+.edit-btn {
+  background-color: #8898aa;
+  color: white;
+}
+
+.save-btn {
+  background-color: #3c8c5c;
+  color: white;
+}
+
+.new-game-btn {
+  background-color: #f39c12;
+  color: white;
+}
+
+/* End Game Button */
+.end-game-row {
+  padding: 8px 15px 15px 15px;
+}
+
+.end-game-btn {
+  width: 100%;
+  height: 48px;
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+/* Scores So Far Popup */
+.scores-popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.scores-popup-content {
+  width: 90%;
+  max-width: 350px;
+  background-color: white;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.scores-popup-content h3 {
+  font-size: 18px;
+  color: #1e5c8b;
+  margin: 0 0 15px 0;
+  text-align: center;
+}
+
+.scores-table {
+  margin-bottom: 20px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.scores-header {
+  display: flex;
+  background-color: #1e5c8b;
+  color: white;
+  font-weight: bold;
+  padding: 10px 0;
+}
+
+.scores-row {
+  display: flex;
+  border-bottom: 1px solid #ddd;
+  padding: 10px 0;
+}
+
+.scores-row:last-child {
+  border-bottom: none;
+}
+
+.team-col {
+  flex: 2;
+  padding: 0 10px;
+  text-align: left;
+}
+
+.party-col, .bonus-col {
+  flex: 1;
+  padding: 0 10px;
+  text-align: center;
+}
+
+.close-scores-btn {
+  width: 100%;
+  padding: 10px;
+  background-color: #1e5c8b;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+/* Media queries for different screen sizes */
+@media (min-width: 768px) {
+  .final-score-analysis {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  
+  .title-container h1 {
+    font-size: 22px;
+  }
+  
+  .contract-category h2 {
+    font-size: 20px;
+  }
+  
+  .contract-details p {
+    font-size: 18px;
+  }
+  
+  .scores-popup-content {
+    max-width: 450px;
+  }
+  
+  .action-btn {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .title-container p {
+    display: none; /* Hide subtitle on very small screens */
+  }
+  
+  .detail-label {
+    font-size: 14px;
+  }
+  
+  .step-label {
+    font-size: 14px;
+  }
+  
+  .action-btn {
+    font-size: 14px;
+    padding: 0 2px;
+  }
+}
+/* Add this to your FinalScoreAnalysis.css or to global.css */
+
+/* UPDATED: Optimized button layout - Two equal buttons side by side */
+.main-action-buttons {
+  display: flex;
+  gap: 12px;
+  margin: 15px 10px;
+  padding: 0;
+}
+
+.edit-analysis-btn,
+.save-continue-btn {
+  flex: 1;
+  height: 48px;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.edit-analysis-btn {
+  background-color: #6c757d;
+  color: white;
+}
+
+.edit-analysis-btn:hover {
+  background-color: #5a6268;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+}
+
+.save-continue-btn {
+  background-color: #28a745;
+  color: white;
+}
+
+.save-continue-btn:hover {
+  background-color: #218838;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* End game button - full width below */
+.end-game-row {
+  padding: 0 10px 15px;
+}
+
+.end-game-btn {
+  width: 100%;
+  height: 44px;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.end-game-btn:hover {
+  background-color: #c82333;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* Remove the old button styles */
+.action-button-row {
+  display: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 375px) {
+  .main-action-buttons {
+    gap: 8px;
+    margin: 12px 5px;
+  }
+  
+  .edit-analysis-btn,
+  .save-continue-btn {
+    height: 44px;
+    font-size: 15px;
+  }
+  
+  .end-game-btn {
+    height: 42px;
+    font-size: 14px;
+  }
+  
+  .end-game-row {
+    padding: 0 5px 12px;
+  }
+}

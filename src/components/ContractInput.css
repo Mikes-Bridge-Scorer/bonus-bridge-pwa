@@ -1,0 +1,194 @@
+/* Enhanced contract input styling for the new layout */
+
+.contract-input-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 10px 5px;
+  width: 100%;
+}
+
+.input-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Section headings */
+.section-heading {
+  font-weight: bold;
+  color: #1e5c8b;
+  font-size: 16px;
+  margin-bottom: 4px;
+}
+
+/* Level buttons - all 7 in one row */
+.level-buttons-row {
+  display: flex;
+  gap: 6px; /* Small gap between buttons */
+  width: 100%;
+}
+
+.level-btn {
+  flex: 1; /* Equal width for all buttons */
+  height: 48px; /* Taller buttons */
+  border: 1px solid #ddd;
+  background-color: #f8f8f8;
+  border-radius: 8px;
+  font-size: 18px; /* Larger font */
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Subtle shadow for enhanced look */
+}
+
+/* Suit buttons - 5 equally sized */
+.suit-buttons {
+  display: flex;
+  gap: 6px;
+  width: 100%;
+}
+
+.suit-btn {
+  flex: 1; /* Equal width for all buttons */
+  height: 48px; /* Same height as level buttons */
+  border: 1px solid #ddd;
+  background-color: #f8f8f8;
+  border-radius: 8px;
+  font-size: 24px; /* Larger font for suits */
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Colored suits */
+.suit-btn[data-suit="♣"] {
+  color: #000; /* Black clubs */
+  font-size: 30px;
+}
+
+.suit-btn[data-suit="♦"] {
+  color: #e74c3c; /* Red diamonds */
+  font-size: 30px;
+}
+
+.suit-btn[data-suit="♥"] {
+  color: #e74c3c; /* Red hearts */
+  font-size: 30px;
+}
+
+.suit-btn[data-suit="♠"] {
+  color: #000; /* Black spades */
+  font-size: 30px;
+}
+
+.suit-btn[data-suit="NT"] {
+  color: #2c3e50; /* Dark color for NT */
+  font-weight: bold;
+  font-size: 22px;
+}
+
+/* Declarer buttons - 4 equally sized */
+.declarer-buttons {
+  display: flex;
+  gap: 6px;
+  width: 100%;
+}
+
+.declarer-btn {
+  flex: 1; /* Equal width */
+  height: 48px; /* Consistent height */
+  border: 1px solid #ddd;
+  background-color: #f8f8f8;
+  border-radius: 8px;
+  font-size: 20px; /* Larger font */
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Doubled buttons - 3 equally sized with text labels */
+.doubled-buttons {
+  display: flex;
+  gap: 6px;
+  width: 100%;
+}
+
+.doubled-btn {
+  flex: 1; /* Equal width */
+  height: 48px; /* Consistent height */
+  border: 1px solid #ddd;
+  background-color: #f8f8f8;
+  border-radius: 8px;
+  font-size: 16px; /* Adjusted for longer text */
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Selected states for all buttons */
+.level-btn.selected,
+.declarer-btn.selected,
+.doubled-btn.selected {
+  background-color: #3498db;
+  color: white;
+  border-color: #3498db;
+  box-shadow: 0 2px 6px rgba(52, 152, 219, 0.4); /* Enhanced shadow for selected */
+}
+
+.suit-btn.selected {
+  background-color: #3498db;
+  border-color: #3498db;
+  color: white !important; /* Override suit colors when selected */
+  box-shadow: 0 2px 6px rgba(52, 152, 219, 0.4);
+}
+
+/* Center the confirm button */
+.center-button-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 5px;
+}
+
+.confirm-contract-btn {
+  width: 80%; /* Not full width, looks nicer centered */
+  padding: 12px;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  height: 48px;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.2); /* More prominent shadow */
+}
+
+.confirm-contract-btn:disabled {
+  background-color: #bdc3c7;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Preview of current contract */
+.contract-preview {
+  background-color: #e8f4ff;
+  border: 1px solid #3498db;
+  padding: 8px;
+  border-radius: 8px;
+  margin-top: 8px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 16px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}

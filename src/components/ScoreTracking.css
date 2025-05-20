@@ -1,0 +1,122 @@
+/* ScoreTracking.css - Add this to your components folder */
+
+.score-tracking {
+  width: 100%;
+  padding: 10px;
+}
+
+.score-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.score-table th, .score-table td {
+  padding: 10px;
+  text-align: center;
+  border-bottom: 1px solid #ddd;
+}
+
+.score-table th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+  color: #1e5c8b;
+}
+
+.contract-summary {
+  margin-bottom: 20px;
+  padding: 10px;
+  background-color: #f9f9f9;
+  border-radius: 5px;
+}
+
+.detail-toggle-btn {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  background-color: #1e5c8b;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin: 10px 0;
+  transition: background-color 0.3s;
+}
+
+.detail-toggle-btn:hover {
+  background-color: #174b73;
+}
+
+.detail-toggle-btn:active {
+  background-color: #123e5e;
+}
+
+.score-details {
+  margin-top: 15px;
+  padding: 15px;
+  background-color: #f2f2f2;
+  border-radius: 5px;
+}
+
+.score-details h4 {
+  margin-top: 0;
+  color: #1e5c8b;
+  margin-bottom: 10px;
+}
+
+.score-details ul {
+  list-style-type: disc;
+  padding-left: 20px;
+  margin: 0;
+}
+
+.score-details li {
+  margin-bottom: 8px;
+}
+
+.scoring-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.bonus-bridge-btn, .party-bridge-btn {
+  padding: 15px;
+  font-size: 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.bonus-bridge-btn {
+  background-color: #3c8c5c;
+  color: white;
+}
+
+.bonus-bridge-btn:hover {
+  background-color: #347a50;
+}
+
+.party-bridge-btn {
+  background-color: #1e5c8b;
+  color: white;
+}
+
+.party-bridge-btn:hover {
+  background-color: #174b73;
+}
+
+/* Responsive design for smaller screens */
+@media (max-width: 480px) {
+  .score-table th, .score-table td {
+    padding: 8px 5px;
+    font-size: 14px;
+  }
+  
+  .detail-toggle-btn, .bonus-bridge-btn, .party-bridge-btn {
+    height: 50px; /* Increased touch target height */
+    font-size: 16px; /* Slightly larger font for easier reading */
+  }
+}

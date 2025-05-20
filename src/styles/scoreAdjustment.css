@@ -1,0 +1,229 @@
+/* Score Adjustment Page CSS - Updated with new button styling */
+
+:root {
+  /* Use the same color variables as global.css */
+  --primary-color: #1e5c8b;
+  --secondary-color: #468bbf;
+  --light-blue: #e8f4ff;
+  --dark-blue: #18476b;
+  --success-color: #3c8c5c;
+  --warning-color: #cc8800;
+  --border-color: #d0d0d0;
+  --button-radius: 6px;
+  --red-color: #d32f2f;
+  --pale-yellow: #fff8e1; /* Pale yellow for the card buttons */
+  --pale-green: #e8f5e9;  /* Pale green for point counter buttons */
+  --selection-border: #333333; /* Dark border for selected buttons */
+}
+
+/* Score Adjustment Page Container */
+.score-adjustment-container {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--light-blue);
+  padding: 0;
+  overflow-y: auto;
+  height: 100%;
+}
+
+.adjustment-header {
+  background-color: var(--primary-color);
+  color: white;
+  padding: 10px;
+  text-align: center;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.card-display-section {
+  padding: 10px;
+  background-color: white;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.section-title {
+  font-weight: bold;
+  margin-bottom: 6px;
+  font-size: 16px;
+  color: var(--dark-blue);
+}
+
+/* Card buttons grid */
+.card-buttons-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr); /* 5 columns by default */
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.card-button {
+  height: 44px; /* Reduced height */
+  font-size: 15px;
+  background-color: var(--pale-yellow); /* Pale yellow background */
+  border: 1px solid var(--border-color);
+  border-radius: var(--button-radius);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+/* Updated selection style with heavy border */
+.card-button.selected {
+  border: 3px solid var(--selection-border) !important;
+  font-weight: bold;
+}
+
+/* Style red suit cards */
+.card-button.hearts, .card-button.diamonds {
+  color: var(--red-color);
+}
+
+/* Card value display */
+.card-value {
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.card-suit {
+  font-size: 18px;
+  margin-left: 2px;
+}
+
+/* Point counters */
+.point-counter-section {
+  padding: 10px;
+  background-color: white;
+  margin-top: 6px;
+  border-top: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.point-counter-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.point-counter-label {
+  font-weight: bold;
+  flex: 2;
+}
+
+.point-counter-display {
+  flex: 1;
+  text-align: center;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 6px;
+  background-color: #f0f0f0;
+  border-radius: var(--button-radius);
+  margin: 0 6px;
+}
+
+.point-counter-buttons {
+  display: flex;
+  gap: 6px;
+  flex: 1;
+}
+
+.point-counter-btn {
+  width: 38px;
+  height: 38px;
+  font-size: 16px;
+  font-weight: bold;
+  border: 1px solid var(--border-color);
+  border-radius: var(--button-radius);
+  background-color: var(--pale-green); /* Pale green background */
+}
+
+.point-counter-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Adjusted score display */
+.adjusted-score-section {
+  padding: 10px;
+  margin-top: 6px;
+  background-color: white;
+}
+
+.adjusted-score-display {
+  text-align: center;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 10px;
+  background-color: #e5f0fb;
+  border: 1px solid var(--secondary-color);
+  border-radius: var(--button-radius);
+  margin-bottom: 12px;
+}
+
+/* Navigation controls */
+.adjustment-controls {
+  padding: 10px;
+  background-color: var(--primary-color);
+  display: flex;
+  gap: 10px;
+}
+
+.back-btn, .save-btn {
+  flex: 1;
+  height: 44px; /* Reduced height */
+  font-size: 16px;
+  border: none;
+  border-radius: var(--button-radius);
+  color: white;
+  font-weight: bold;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.back-btn {
+  background-color: var(--secondary-color);
+}
+
+.save-btn {
+  background-color: var(--success-color);
+}
+
+/* Media queries for smaller screens */
+@media (max-width: 400px) {
+  .card-buttons-grid {
+    grid-template-columns: repeat(4, 1fr); /* 4 columns on smaller screens */
+    gap: 5px;
+  }
+  
+  .card-button {
+    height: 42px;
+    font-size: 14px;
+  }
+  
+  .card-value {
+    font-size: 15px;
+  }
+  
+  .card-suit {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 350px) {
+  .card-buttons-grid {
+    gap: 4px;
+  }
+  
+  .card-button {
+    height: 40px;
+    font-size: 13px;
+  }
+}
+
+/* Larger screens */
+@media (min-width: 600px) {
+  .card-buttons-grid {
+    grid-template-columns: repeat(7, 1fr); /* 7 columns on larger screens */
+  }
+}

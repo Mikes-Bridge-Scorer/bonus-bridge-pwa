@@ -1,0 +1,283 @@
+/* Mobile-optimized ScoreAdjustment.css with larger text */
+
+.score-adjustment {
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 15px;
+  font-family: Arial, sans-serif;
+  border: 3px solid #000;
+  border-radius: 12px;
+  background-color: #f9f9f9;
+  box-sizing: border-box;
+}
+
+/* Main title */
+.main-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #1e5c8b;
+  text-align: center;
+  margin: 10px 0;
+}
+
+/* Flashing pause notice */
+.pause-notice {
+  font-size: 18px;
+  font-weight: bold;
+  text-align: center;
+  margin: 12px 0;
+  padding: 10px;
+  border-radius: 8px;
+  background-color: #fff;
+  color: #ff4d4d;
+  transition: color 0.3s;
+}
+
+.pause-notice.flashing {
+  color: #ff0000;
+}
+
+/* Help button container */
+.help-button-container {
+  display: flex;
+  justify-content: flex-end;
+  margin: 10px 0;
+}
+
+/* Info button */
+.info-btn {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 15px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.info-btn:hover {
+  background-color: #2980b9;
+}
+
+/* Points guide */
+.points-guide {
+  background-color: #e3f2fd;
+  padding: 12px;
+  border-radius: 8px;
+  margin: 15px 0;
+  font-size: 16px;
+  line-height: 1.4;
+  border: 1px solid #bbdefb;
+}
+
+.points-guide strong {
+  color: #1565c0;
+  font-size: 17px;
+}
+
+/* Contract info */
+.contract-info {
+  background-color: #fff;
+  padding: 15px;
+  border-radius: 8px;
+  margin: 15px 0;
+  border: 1px solid #ddd;
+}
+
+.contract-info h2 {
+  font-size: 18px;
+  color: #1e5c8b;
+  margin: 0 0 10px 0;
+}
+
+.contract-info p {
+  font-size: 17px;
+  margin: 0;
+}
+
+/* Input sections */
+.input-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin: 15px 0;
+}
+
+.input-section {
+  background-color: #fff;
+  padding: 15px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+.input-section h2 {
+  font-size: 18px;
+  color: #1e5c8b;
+  margin: 0 0 12px 0;
+}
+
+/* Numeric input */
+.numeric-input {
+  display: flex;
+  align-items: center;
+  height: 50px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #ccc;
+}
+
+.decrement-btn, .increment-btn {
+  width: 60px;
+  height: 50px;
+  background-color: #1e5c8b;
+  color: white;
+  border: none;
+  font-size: 24px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.increment-btn {
+  background-color: #1e5c8b;
+}
+
+.decrement-btn:disabled, .increment-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.input-value {
+  flex-grow: 1;
+  text-align: center;
+  font-size: 26px;
+  font-weight: bold;
+}
+
+/* Action buttons */
+.action-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.cancel-btn, .save-btn {
+  flex: 1;
+  height: 56px;
+  font-size: 18px;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.cancel-btn {
+  background-color: #6c757d;
+  color: white;
+}
+
+.save-btn {
+  background-color: #28a745;
+  color: white;
+}
+
+/* Styles for the BonusBridgeExplanation component */
+.bonus-bridge-explanation {
+  z-index: 1000;
+}
+
+.explanation-content {
+  width: 98%;
+  max-width: 98%;
+  height: 98vh;
+  overflow-y: auto;
+}
+
+.explanation-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.explanation-header h2 {
+  font-size: 20px;
+}
+
+.explanation-body {
+  font-size: 16px;
+}
+
+.explanation-body h3 {
+  font-size: 18px;
+}
+
+.explanation-body h4 {
+  font-size: 17px;
+}
+
+.core-principles li {
+  font-size: 16px;
+  padding: 10px 0;
+}
+
+.expected-hcp-table {
+  font-size: 16px;
+}
+
+.done-btn {
+  font-size: 18px;
+  padding: 12px 30px;
+  border-radius: 8px;
+}
+
+@keyframes flash {
+  0%, 50% { color: #ff0000; }
+  51%, 100% { color: #ff6b6b; }
+}
+
+/* Apply flashing animation */
+@keyframes flash {
+  0% { color: #ff0000; }
+  50% { color: #ff6b6b; }
+  100% { color: #ff0000; }
+}
+
+.flashing {
+  animation: flash 1.6s infinite;
+}
+
+/* Media queries for different screen sizes */
+@media (min-width: 768px) {
+  .score-adjustment {
+    max-width: 600px;
+    padding: 20px;
+  }
+  
+  .input-sections {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Ensure the popup takes full screen on mobile */
+@media (max-width: 480px) {
+  .explanation-content {
+    width: 100%;
+    height: 100vh;
+    border-radius: 0;
+  }
+  
+  .explanation-header h2 {
+    font-size: 18px;
+  }
+  
+  .explanation-body {
+    font-size: 15px;
+    padding: 15px;
+  }
+}
