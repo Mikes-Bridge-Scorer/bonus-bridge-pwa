@@ -1,4 +1,4 @@
-// TrialManager.js - Complete version with 7-digit code system and one-time use
+// TrialManager.js - Completed version with 7-digit code system and one-time use
 import CryptoJS from 'crypto-js';
 
 class TrialManager {

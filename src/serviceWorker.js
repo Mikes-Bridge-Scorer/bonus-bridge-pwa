@@ -1,5 +1,5 @@
 // Bonus Bridge PWA Service Worker
-// This integrates with the trial system
+// This integrates with a trial system
 
 // IMPORTANT: Update this version number when releasing updates
 const CACHE_NAME = 'bonus-bridge-cache-v1.0.1';

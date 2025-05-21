@@ -1,7 +1,7 @@
 /**
  * App Update Manager for Bonus Bridge
  * Integrates with Trial Manager to handle version updates properly
- * Place this file in your utils folder
+ * Place the file in your utils folder
  */
 
 // IMPORTANT: Update this version number when releasing updates

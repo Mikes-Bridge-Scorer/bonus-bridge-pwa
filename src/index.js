@@ -1,4 +1,4 @@
-// This service worker registration file should be placed in your src directory
+// The service worker registration file should be placed in your src directory
 // It works with the service-worker.js file in your public directory
 
 // Define the current app version - keep in sync with index.js
