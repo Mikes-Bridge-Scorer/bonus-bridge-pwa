@@ -1,13 +1,10 @@
 {
   "files": {
-    "main.css": "/Bonus-Bridge-App/static/css/main.45606bed.css",
-    "main.js": "/Bonus-Bridge-App/static/js/main.06c1d316.js",
+    "main.js": "/Bonus-Bridge-App/static/js/main.a2be91e3.js",
     "index.html": "/Bonus-Bridge-App/index.html",
-    "main.45606bed.css.map": "/Bonus-Bridge-App/static/css/main.45606bed.css.map",
-    "main.06c1d316.js.map": "/Bonus-Bridge-App/static/js/main.06c1d316.js.map"
+    "main.a2be91e3.js.map": "/Bonus-Bridge-App/static/js/main.a2be91e3.js.map"
   },
   "entrypoints": [
-    "static/css/main.45606bed.css",
-    "static/js/main.06c1d316.js"
+    "static/js/main.a2be91e3.js"
   ]
 }

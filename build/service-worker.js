@@ -1,50 +1,48 @@
-// Bonus Bridge PWA Service Worker
-// This integrates with the trial system
+/* eslint-disable no-restricted-globals */
 
-// IMPORTANT: Update this version number when releasing updates
+// This service worker file should be placed in your public folder
+// IMPORTANT: Update version numbers when releasing new versions
 const CACHE_NAME = 'bonus-bridge-cache-v1.0.1';
-const APP_VERSION = '1.0.1';
+const APP_VERSION = '1.0.1';  // Keep in sync with index.js
 
-// List of all assets to cache for offline use
+// Files to cache for offline use
 const urlsToCache = [
   '/',
   '/index.html',
-  '/static/js/main.js',
-  '/static/css/main.css',
+  '/static/css/main.chunk.css',
+  '/static/js/main.chunk.js',
+  '/static/js/bundle.js',
   '/manifest.json',
-  '/favicon.svg',
+  '/favicon.ico',
   '/logo192.png',
   '/logo512.png'
 ];
 
 // Install handler - cache initial resources
 self.addEventListener('install', event => {
-  console.log('Service Worker: Installing...');
+  console.log('Service Worker: Installing version', APP_VERSION);
   
-  // Force new service worker to activate immediately, replacing the old one
+  // Force new service worker to activate immediately
   self.skipWaiting();
   
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
         console.log('Service Worker: Opened cache');
-        return cache.addAll(urlsToCache);
-      })
-      .catch(error => {
-        console.error('Service Worker: Cache error', error);
+        return cache.addAll(urlsToCache)
+          .then(() => console.log('Service Worker: Resources cached'))
+          .catch(error => console.error('Service Worker: Caching error', error));
       })
   );
 });
 
 // Activation handler - clean up old caches
 self.addEventListener('activate', event => {
-  console.log('Service Worker: Activating...');
+  console.log('Service Worker: Activating version', APP_VERSION);
   
   const cacheWhitelist = [CACHE_NAME];
   
-  // Take control of all open clients immediately
-  self.clients.claim();
-  
+  // Take control of all clients immediately
   event.waitUntil(
     Promise.all([
       // Clean up old caches
@@ -59,14 +57,19 @@ self.addEventListener('activate', event => {
         );
       }),
       
-      // Notify all clients about the update
-      self.clients.matchAll().then(clients => {
-        return Promise.all(clients.map(client => {
-          return client.postMessage({
-            type: 'APP_UPDATED',
-            version: APP_VERSION
-          });
-        }));
+      // Claim all clients
+      self.clients.claim().then(() => {
+        // After claiming clients, send update notification
+        return self.clients.matchAll().then(clients => {
+          return Promise.all(
+            clients.map(client => {
+              return client.postMessage({
+                type: 'APP_UPDATED',
+                version: APP_VERSION
+              });
+            })
+          );
+        });
       })
     ])
   );
@@ -74,8 +77,9 @@ self.addEventListener('activate', event => {
 
 // Fetch handler - serve cached content when offline
 self.addEventListener('fetch', event => {
-  // Skip cross-origin requests
-  if (!event.request.url.startsWith(self.location.origin)) {
+  // Skip cross-origin requests and non-GET requests
+  if (!event.request.url.startsWith(self.location.origin) || 
+      event.request.method !== 'GET') {
     return;
   }
   
@@ -126,15 +130,14 @@ self.addEventListener('fetch', event => {
 self.addEventListener('message', event => {
   console.log('Service Worker: Message received', event.data);
   
-  if (event.data && event.data.type === 'CHECK_FOR_UPDATE') {
-    // Respond with current version
-    event.ports[0].postMessage({
-      type: 'UPDATE_STATUS',
-      version: APP_VERSION
-    });
+  // Handle skip waiting message (immediate update)
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    console.log('Service Worker: Skip waiting and activate now');
+    self.skipWaiting();
   }
   
-  if (event.data && event.data.type === 'SKIP_WAITING') {
-    self.skipWaiting();
+  // Handle version info messages
+  if (event.data && event.data.type === 'VERSION_INFO') {
+    console.log('Service Worker: Received version info', event.data.version);
   }
 });

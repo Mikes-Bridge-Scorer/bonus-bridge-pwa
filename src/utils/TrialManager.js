@@ -3,10 +3,8 @@ import CryptoJS from 'crypto-js';
 
 class TrialManager {
   constructor() {
-    // TEST SETTINGS - 5 deals total, warning at 60% (3 deals)
-    this.maxDeals = 5;         // Initial trial deals  
-    this.warningThreshold = 3; // Warning at 3 deals (60%)
-    
+    // TEST SETTINGS - 50 deals total, warning at 60% 
+    this.maxDeals = 50;         
     // Security settings
     this.storageKey = 'bonus_bridge_trial';
     this.hashKey = 'bb_secure_2025';
@@ -267,16 +265,16 @@ class TrialManager {
   }
 
   // Check if warning should be shown
-shouldShowWarning() {
-  const data = this.getTrialData();
-  if (!data) return false;
-  
-  // Calculate 60% threshold dynamically
-  const warningThreshold = Math.floor(data.maxDeals * 0.6);
-  
-  // Show warning at 60% of max deals, but not if expired
-  return data.dealsPlayed >= warningThreshold && !data.isExpired;
-}
+  shouldShowWarning() {
+    const data = this.getTrialData();
+    if (!data) return false;
+    
+    // Calculate 60% threshold dynamically
+    const warningThreshold = Math.floor(data.maxDeals * 0.6);
+    
+    // Show warning at 60% of max deals, but not if expired
+    return data.dealsPlayed >= warningThreshold && !data.isExpired;
+  }
 
   // Check if trial is expired
   isExpired() {
@@ -299,6 +297,49 @@ shouldShowWarning() {
     };
     
     this.saveTrialData(expiredData);
+  }
+
+  /**
+   * Reset the deal count when app is updated
+   * This allows genuine app updates to reset the trial count
+   * without affecting extension codes or other data
+   */
+  resetDealCount() {
+    const data = this.getTrialData();
+    if (!data) {
+      // If no data, initialize a new trial
+      this.initialize();
+      return {
+        dealCount: 0,
+        startDate: new Date()
+      };
+    }
+    
+    // Reset deal count to 0
+    data.dealsPlayed = 0;
+    
+    // Update the start date to now
+    data.startDate = new Date().toISOString();
+    
+    // Remove expired status
+    data.isExpired = false;
+    
+    // Reset warnings
+    data.warnings = 0;
+    
+    // Keep extensions history and max deals
+    
+    // Save updated data
+    this.saveTrialData(data);
+    
+    console.log('🔄 Deal count reset due to app update');
+    console.log(`🎯 ${data.maxDeals} deals now available`);
+    
+    return {
+      dealCount: 0,
+      maxDeals: data.maxDeals,
+      startDate: new Date(data.startDate)
+    };
   }
 
   // Get trial statistics for display
