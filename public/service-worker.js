@@ -1,19 +1,18 @@
 /* eslint-disable no-restricted-globals */
 
-// The service worker file should be placed in your public folder
+// This service worker file should be placed in your public folder
 // IMPORTANT: Update version numbers when releasing new versions
-const CACHE_NAME = 'bonus-bridge-cache-v1.0.1';
-const APP_VERSION = '1.0.1';  // Keep in sync with index.js
+const CACHE_NAME = 'bonus-bridge-cache-v1.0.2';
+const APP_VERSION = '1.0.2';  // Keep in sync with index.js
 
-// Files to cache for offline use
+// Files to cache for offline use - Updated for build output
 const urlsToCache = [
   '/',
   '/index.html',
-  '/static/css/main.chunk.css',
-  '/static/js/main.chunk.js',
-  '/static/js/bundle.js',
+  '/static/css/main.css',
+  '/static/js/main.js',
   '/manifest.json',
-  '/favicon.ico',
+  '/favicon.svg',
   '/logo192.png',
   '/logo512.png'
 ];
@@ -29,9 +28,20 @@ self.addEventListener('install', event => {
     caches.open(CACHE_NAME)
       .then(cache => {
         console.log('Service Worker: Opened cache');
-        return cache.addAll(urlsToCache)
-          .then(() => console.log('Service Worker: Resources cached'))
-          .catch(error => console.error('Service Worker: Caching error', error));
+        // Try to cache resources, but don't fail if some are missing
+        return Promise.allSettled(
+          urlsToCache.map(url => 
+            cache.add(url).catch(error => {
+              console.warn('Service Worker: Failed to cache', url, error);
+              return null;
+            })
+          )
+        ).then(() => {
+          console.log('Service Worker: Resources cached (with possible warnings)');
+        });
+      })
+      .catch(error => {
+        console.error('Service Worker: Cache opening failed', error);
       })
   );
 });
@@ -59,6 +69,7 @@ self.addEventListener('activate', event => {
       
       // Claim all clients
       self.clients.claim().then(() => {
+        console.log('Service Worker: Claimed all clients');
         // After claiming clients, send update notification
         return self.clients.matchAll().then(clients => {
           return Promise.all(
@@ -83,11 +94,17 @@ self.addEventListener('fetch', event => {
     return;
   }
   
+  // Skip chrome-extension and other non-http requests
+  if (!event.request.url.startsWith('http')) {
+    return;
+  }
+  
   event.respondWith(
     caches.match(event.request)
       .then(response => {
         // Cache hit - return response
         if (response) {
+          console.log('Service Worker: Serving from cache:', event.request.url);
           return response;
         }
         
@@ -107,20 +124,25 @@ self.addEventListener('fetch', event => {
             caches.open(CACHE_NAME)
               .then(cache => {
                 // Don't cache API requests or similar dynamic content
-                if (!event.request.url.includes('/api/')) {
+                if (!event.request.url.includes('/api/') && 
+                    !event.request.url.includes('sockjs-node')) {
                   cache.put(event.request, responseToCache);
+                  console.log('Service Worker: Cached new resource:', event.request.url);
                 }
               });
               
             return response;
           })
           .catch(error => {
-            console.error('Service Worker: Fetch error', error);
+            console.warn('Service Worker: Fetch failed for:', event.request.url, error);
             
             // If fetch fails (when offline), try to serve the offline page
             if (event.request.mode === 'navigate') {
               return caches.match('/index.html');
             }
+            
+            // For other requests, just let them fail gracefully
+            throw error;
           });
       })
   );
