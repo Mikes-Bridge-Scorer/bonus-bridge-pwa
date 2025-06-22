@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import './ScoreTracking.css';
 
 /**
@@ -10,11 +10,6 @@ import './ScoreTracking.css';
  * @param {Function} props.onChoosePartyBridge - Function to handle party bridge selection
  */
 const ScoreTracking = ({ scores, currentDeal, onChooseBonusBridge, onChoosePartyBridge }) => {
-  // Debug log for incoming props
-  useEffect(() => {
-    console.log('ScoreTracking - Current Scores:', scores);
-    console.log('ScoreTracking - Current Deal:', currentDeal);
-  }, [scores, currentDeal]);
   
   // Format contract for display
   const formatContract = () => {
@@ -144,7 +139,7 @@ const ScoreTracking = ({ scores, currentDeal, onChooseBonusBridge, onChooseParty
     // If it's a fresh deal with no contract yet, show 0
     if (!currentDeal || !currentDeal.contract) return 0;
     
-    // FIXED: Directly access the scores from currentDeal first with fallbacks
+    // Directly access the scores from currentDeal first with fallbacks
     if (team === 'NS') {
       // For North-South
       if (showingBonusScores) {
@@ -183,15 +178,13 @@ const ScoreTracking = ({ scores, currentDeal, onChooseBonusBridge, onChooseParty
       total = team === 'NS' ? scores.nsTotal : scores.ewTotal;
     }
     
-    // FIXED: Handle edge cases
+    // Handle edge cases
     if (total === undefined || total === null) {
-      console.warn(`Running total for ${team} is undefined or null`);
       return 0;
     }
     
     if (typeof total === 'object') {
       // Handle case where score is incorrectly an object
-      console.warn(`Running total for ${team} is an object instead of a number`, total);
       return 0;
     }
     
@@ -201,7 +194,7 @@ const ScoreTracking = ({ scores, currentDeal, onChooseBonusBridge, onChooseParty
   
   // Determine if we show contract info or not
   const shouldShowContractInfo = () => {
-    // FIXED: Show contract info if there's a contract regardless of deal number
+    // Show contract info if there's a contract regardless of deal number
     return currentDeal && currentDeal.contract;
   };
   
@@ -249,7 +242,6 @@ const ScoreTracking = ({ scores, currentDeal, onChooseBonusBridge, onChooseParty
             <strong>Result:</strong> {formatResult()}
           </p>
           
-          {/* FIXED: Removed the toggle button and always show score details */}
           <div className="score-details">
             <h4>Score Calculation</h4>
             <ul>

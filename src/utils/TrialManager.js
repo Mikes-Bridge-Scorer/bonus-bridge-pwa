@@ -1,22 +1,15 @@
-// TrialManager.js - Completed version with 7-digit code system and one-time use
+// TrialManager.js - Production version (debug code removed)
 import CryptoJS from 'crypto-js';
 
 class TrialManager {
   constructor() {
-    // TEST SETTINGS - 50 deals total, warning at 60% 
     this.maxDeals = 50;         
-    // Security settings
     this.storageKey = 'bonus_bridge_trial';
     this.hashKey = 'bb_secure_2025';
-    
-    // Generate unique identifier for this browser
     this.browserFingerprint = this.generateFingerprint();
-    
-    // Initialize the trial
     this.initialize();
   }
 
-  // Create a unique identifier for this browser/device
   generateFingerprint() {
     const data = {
       userAgent: navigator.userAgent,
@@ -28,12 +21,10 @@ class TrialManager {
     return CryptoJS.SHA256(JSON.stringify(data)).toString();
   }
 
-  // Initialize trial data on first load
   initialize() {
     const existing = this.getTrialData();
     
     if (!existing) {
-      // First time user - create new trial
       const trialData = {
         startDate: new Date().toISOString(),
         fingerprint: this.browserFingerprint,
@@ -42,58 +33,50 @@ class TrialManager {
         gamesCompleted: 0,
         isExpired: false,
         warnings: 0,
-        extensions: [] // Track all extensions applied (prevents reuse)
+        extensions: []
       };
       
       this.saveTrialData(trialData);
-      console.log(`🎯 Trial initialized: ${this.maxDeals} deals available`);
     } else {
-      // Existing user - check fingerprint
       if (existing.fingerprint !== this.browserFingerprint) {
-        console.warn('🚫 Browser fingerprint mismatch - trial reset');
+        console.warn('Browser fingerprint mismatch - trial reset');
         this.resetTrial();
       }
       
-      // Update maxDeals from stored data (in case it was extended)
       this.maxDeals = existing.maxDeals || this.maxDeals;
     }
   }
 
-  // Validate 7-character extension code (6 letters/digits + 1 digit)  
-  // Custom mapping: A=3, B=4, C=5, ..., Z=28, and 0=0, 1=1, ..., 9=9
   validateExtensionCode(code) {
     if (!code || typeof code !== 'string') return null;
     
-    // Remove any spaces and convert to uppercase
     const cleanCode = code.replace(/\s/g, '').toUpperCase();
     if (cleanCode.length !== 7) return null;
     
-    // Check format: 6 letters/digits + 1 digit (1-9)
-    if (!/^[A-Z0-9]{6}[1-9]$/.test(cleanCode)) return null;
+    const formatRegex = /^[A-Z0-9]{6}[1-9]$/;
+    if (!formatRegex.test(cleanCode)) return null;
     
-    // Extract first 6 characters and last digit
     const firstSix = cleanCode.substring(0, 6);
     const lastDigit = parseInt(cleanCode.substring(6, 7));
     
-    // Calculate sum of first 6 characters
     const sum = firstSix.split('').reduce((acc, char) => {
       if (char >= 'A' && char <= 'Z') {
-        // Letters: A=3, B=4, etc.
-        return acc + (char.charCodeAt(0) - 62); // A=65, so 65-62=3
+        return acc + (char.charCodeAt(0) - 62);
       } else {
-        // Digits: 0=0, 1=1, etc.
         return acc + parseInt(char);
       }
     }, 0);
     
-    // Check if sum equals 100
-    if (sum !== 100) return null;
+    const isTestCode = sum === 99;
+    const isRegularCode = sum === 100;
     
-    // Calculate number of deals this code grants
+    if (!isTestCode && !isRegularCode) return null;
+    
     const dealsGranted = lastDigit * 100;
     
     return {
       isValid: true,
+      isTestCode: isTestCode,
       dealsGranted: dealsGranted,
       codeUsed: cleanCode,
       sum: sum,
@@ -101,42 +84,68 @@ class TrialManager {
     };
   }
 
-  // Generate a sample extension code (for testing/demonstration)
-  // Using custom mapping: A=3, B=4, C=5, ..., Z=28
-  generateSampleCode(dealPackage = 100) {
-    // dealPackage should be 100, 200, 300, etc. up to 900
+  generateTestCode(dealPackage = 100) {
     const multiplier = dealPackage / 100;
     if (multiplier < 1 || multiplier > 9 || dealPackage % 100 !== 0) {
       throw new Error('Deal package must be 100, 200, 300, ... up to 900');
     }
     
-    // Generate 6 random letter values that sum to 100
-    // Letter values: A=3, B=4, ..., Z=28
     let values = [];
-    let remainingSum = 100;
+    let remainingSum = 99;
     
-    // Generate first 5 letters (values 3-28 each)
     for (let i = 0; i < 5; i++) {
-      const maxForThis = Math.min(28, remainingSum - (5 - i) * 3); // Ensure we can finish
-      const minForThis = Math.max(3, remainingSum - (5 - i) * 28); // Ensure we don't exceed
+      const maxForThis = Math.min(28, remainingSum - (5 - i) * 3);
+      const minForThis = Math.max(3, remainingSum - (5 - i) * 28);
       const value = Math.floor(Math.random() * (maxForThis - minForThis + 1)) + minForThis;
       values.push(value);
       remainingSum -= value;
     }
     
-    // Last letter value is whatever makes the sum = 100
     values.push(remainingSum);
     
-    // Shuffle the values to make them less predictable
     for (let i = values.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [values[i], values[j]] = [values[j], values[i]];
     }
     
-    // Convert values to letters (3=A, 4=B, etc.)
     const letters = values.map(value => String.fromCharCode(62 + value));
+    const code = letters.join('') + multiplier.toString();
     
-    // Create the 7-character code
+    return {
+      code: code,
+      dealsGranted: dealPackage,
+      sum: 99,
+      multiplier: multiplier,
+      letterValues: values,
+      isTestCode: true
+    };
+  }
+
+  generateSampleCode(dealPackage = 100) {
+    const multiplier = dealPackage / 100;
+    if (multiplier < 1 || multiplier > 9 || dealPackage % 100 !== 0) {
+      throw new Error('Deal package must be 100, 200, 300, ... up to 900');
+    }
+    
+    let values = [];
+    let remainingSum = 100;
+    
+    for (let i = 0; i < 5; i++) {
+      const maxForThis = Math.min(28, remainingSum - (5 - i) * 3);
+      const minForThis = Math.max(3, remainingSum - (5 - i) * 28);
+      const value = Math.floor(Math.random() * (maxForThis - minForThis + 1)) + minForThis;
+      values.push(value);
+      remainingSum -= value;
+    }
+    
+    values.push(remainingSum);
+    
+    for (let i = values.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [values[i], values[j]] = [values[j], values[i]];
+    }
+    
+    const letters = values.map(value => String.fromCharCode(62 + value));
     const code = letters.join('') + multiplier.toString();
     
     return {
@@ -148,7 +157,32 @@ class TrialManager {
     };
   }
 
-  // Extend trial with 7-digit code (ONE-TIME USE ONLY)
+  activateTestMode() {
+    const currentData = this.getTrialData();
+    const usedTestCodes = currentData?.extensions?.filter(ext => ext.isTestCode) || [];
+    
+    Object.keys(localStorage).forEach(key => {
+      if (key.startsWith('bonus') || key.startsWith('bonusBridge') || key === this.storageKey) {
+        localStorage.removeItem(key);
+      }
+    });
+    
+    this.initialize();
+    
+    const newData = this.getTrialData();
+    if (newData && usedTestCodes.length > 0) {
+      newData.extensions = usedTestCodes;
+      this.saveTrialData(newData);
+    }
+    
+    return {
+      success: true,
+      message: '🧪 Test Mode Activated! All data cleared and trial reset to fresh state.',
+      isTestMode: true,
+      testModeActivated: true
+    };
+  }
+
   extendTrial(code) {
     const validation = this.validateExtensionCode(code);
     
@@ -159,12 +193,34 @@ class TrialManager {
       };
     }
     
+    if (validation.isTestCode) {
+      const data = this.getTrialData();
+      if (data && data.extensions && data.extensions.some(ext => ext.code === validation.codeUsed)) {
+        return { 
+          success: false, 
+          message: 'This test code has already been used. Test codes can only be used once per session.' 
+        };
+      }
+      
+      if (data) {
+        data.extensions = data.extensions || [];
+        data.extensions.push({
+          code: validation.codeUsed,
+          dealsGranted: validation.dealsGranted,
+          appliedDate: new Date().toISOString(),
+          isTestCode: true
+        });
+        this.saveTrialData(data);
+      }
+      
+      return this.activateTestMode();
+    }
+    
     const data = this.getTrialData();
     if (!data) {
       return { success: false, message: 'No trial data found' };
     }
     
-    // CRITICAL: Check if this code has already been used (prevents reuse)
     if (data.extensions && data.extensions.some(ext => ext.code === validation.codeUsed)) {
       return { 
         success: false, 
@@ -172,7 +228,6 @@ class TrialManager {
       };
     }
     
-    // Apply the extension
     const newMaxDeals = data.maxDeals + validation.dealsGranted;
     const extensionRecord = {
       code: validation.codeUsed,
@@ -182,20 +237,14 @@ class TrialManager {
       newMaxDeals: newMaxDeals
     };
     
-    // Update trial data
     data.maxDeals = newMaxDeals;
-    data.isExpired = false; // Remove expiry status
-    data.warnings = 0; // Reset warnings
+    data.isExpired = false;
+    data.warnings = 0;
     data.extensions = data.extensions || [];
-    data.extensions.push(extensionRecord); // STORE USED CODE PERMANENTLY
+    data.extensions.push(extensionRecord);
     
-    // Update instance variable
     this.maxDeals = newMaxDeals;
-    
     this.saveTrialData(data);
-    
-    console.log(`🎉 Trial extended! +${validation.dealsGranted} deals (Total: ${newMaxDeals})`);
-    console.log(`🔒 Code ${validation.codeUsed} marked as used and cannot be reused`);
     
     return { 
       success: true, 
@@ -206,7 +255,6 @@ class TrialManager {
     };
   }
 
-  // Get trial data from storage (decrypted)
   getTrialData() {
     try {
       const encrypted = localStorage.getItem(this.storageKey);
@@ -220,7 +268,6 @@ class TrialManager {
     }
   }
 
-  // Save trial data to storage (encrypted)
   saveTrialData(data) {
     try {
       const encrypted = CryptoJS.AES.encrypt(JSON.stringify(data), this.hashKey).toString();
@@ -230,7 +277,6 @@ class TrialManager {
     }
   }
 
-  // Check if more deals are allowed
   canPlayDeals() {
     const data = this.getTrialData();
     if (!data) return false;
@@ -238,25 +284,20 @@ class TrialManager {
     return !data.isExpired && data.dealsPlayed < data.maxDeals;
   }
 
-  // Increment the deal counter
   incrementDeals() {
     const data = this.getTrialData();
     if (!data) return false;
 
     data.dealsPlayed++;
     
-    // Check if limit reached
     if (data.dealsPlayed >= data.maxDeals) {
       data.isExpired = true;
     }
     
     this.saveTrialData(data);
-    
-    console.log(`📊 Deal ${data.dealsPlayed}/${data.maxDeals} completed`);
     return !data.isExpired;
   }
 
-  // Get remaining deals
   getRemainingDeals() {
     const data = this.getTrialData();
     if (!data) return 0;
@@ -264,25 +305,27 @@ class TrialManager {
     return Math.max(0, data.maxDeals - data.dealsPlayed);
   }
 
-  // Check if warning should be shown
   shouldShowWarning() {
     const data = this.getTrialData();
     if (!data) return false;
     
-    // Calculate 60% threshold dynamically
     const warningThreshold = Math.floor(data.maxDeals * 0.6);
-    
-    // Show warning at 60% of max deals, but not if expired
     return data.dealsPlayed >= warningThreshold && !data.isExpired;
   }
 
-  // Check if trial is expired
   isExpired() {
     const data = this.getTrialData();
-    return data ? data.isExpired : false;
+    if (!data) return false;
+    
+    if (data.dealsPlayed >= this.maxDeals) {
+      data.isExpired = true;
+      this.saveTrialData(data);
+      return true;
+    }
+    
+    return data.isExpired;
   }
 
-  // Reset trial (for suspicious activity)
   resetTrial() {
     localStorage.removeItem(this.storageKey);
     
@@ -293,21 +336,15 @@ class TrialManager {
       maxDeals: this.maxDeals,
       isExpired: true,
       suspicious: true,
-      extensions: [] // Reset extensions list
+      extensions: []
     };
     
     this.saveTrialData(expiredData);
   }
 
-  /**
-   * Reset the deal count when app is updated
-   * This allows genuine app updates to reset the trial count
-   * without affecting extension codes or other data
-   */
   resetDealCount() {
     const data = this.getTrialData();
     if (!data) {
-      // If no data, initialize a new trial
       this.initialize();
       return {
         dealCount: 0,
@@ -315,25 +352,12 @@ class TrialManager {
       };
     }
     
-    // Reset deal count to 0
     data.dealsPlayed = 0;
-    
-    // Update the start date to now
     data.startDate = new Date().toISOString();
-    
-    // Remove expired status
     data.isExpired = false;
-    
-    // Reset warnings
     data.warnings = 0;
     
-    // Keep extensions history and max deals
-    
-    // Save updated data
     this.saveTrialData(data);
-    
-    console.log('🔄 Deal count reset due to app update');
-    console.log(`🎯 ${data.maxDeals} deals now available`);
     
     return {
       dealCount: 0,
@@ -342,15 +366,12 @@ class TrialManager {
     };
   }
 
-  // Get trial statistics for display
   getStats() {
     const data = this.getTrialData();
     if (!data) return null;
     
     const startDate = new Date(data.startDate);
     const daysUsed = Math.floor((new Date() - startDate) / (1000 * 60 * 60 * 24));
-    
-    // Ensure extensions array exists
     const extensions = data.extensions || [];
     
     return {
@@ -365,7 +386,6 @@ class TrialManager {
     };
   }
 
-  // Generate feedback email with extension request
   generateFeedbackEmail() {
     const stats = this.getStats();
     if (!stats) return null;
@@ -416,7 +436,6 @@ Best regards,
     };
   }
 
-  // Get list of all used extension codes (for admin/debugging)
   getUsedCodes() {
     const data = this.getTrialData();
     if (!data || !data.extensions) return [];
@@ -428,11 +447,24 @@ Best regards,
     }));
   }
 
-  // Reset trial for testing (REMOVE IN PRODUCTION)
+  generateTestCodes() {
+    const testCodes = [];
+    for (let i = 1; i <= 9; i++) {
+      const dealPackage = i * 100;
+      const testCode = this.generateTestCode(dealPackage);
+      testCodes.push({
+        package: `${dealPackage} deals`,
+        code: testCode.code,
+        sum: testCode.sum,
+        note: 'Test code (sum=99) - activates test mode'
+      });
+    }
+    return testCodes;
+  }
+
   resetTrialForTesting() {
     localStorage.removeItem(this.storageKey);
     this.initialize();
-    console.log('🔄 Trial reset for testing - 5 deals available');
   }
 }
 

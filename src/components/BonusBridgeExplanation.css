@@ -238,3 +238,35 @@
     font-size: 11px;
   }
 }
+/* Add this to your existing WelcomePage.css */
+
+.clickable-feature {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.clickable-feature:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(30, 92, 139, 0.25);
+  background-color: #f8f9fa;
+}
+
+.clickable-feature:active {
+  transform: translateY(-1px);
+}
+
+/* Add a subtle indication that these are clickable */
+.clickable-feature::after {
+  content: '👆';
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  font-size: 0.7rem;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.clickable-feature:hover::after {
+  opacity: 0.6;
+}

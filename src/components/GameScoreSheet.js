@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import TrialPopup from './TrialPopup'; // Add this import
 import './GameScoreSheet.css';
 
 /**
@@ -6,8 +7,9 @@ import './GameScoreSheet.css';
  * @param {Object} props - Component props
  * @param {Object} props.gameState - Current game state
  * @param {Function} props.onNewGame - Function to start a new game
+ * @param {Object} props.trialManager - Trial manager instance
  */
-const GameScoreSheet = ({ gameState, onNewGame }) => {
+const GameScoreSheet = ({ gameState, onNewGame, trialManager }) => {
   // State for selected tab
   const [activeTab, setActiveTab] = useState('summary');
   // State for deal detail popup
@@ -18,6 +20,11 @@ const GameScoreSheet = ({ gameState, onNewGame }) => {
   const [showExportMenu, setShowExportMenu] = useState(false);
   // Ref for export button (for positioning the menu)
   const exportBtnRef = useRef(null);
+  
+  // NEW: State for new game confirmation popup
+  const [showNewGameConfirm, setShowNewGameConfirm] = useState(false);
+  const [showTrialPopup, setShowTrialPopup] = useState(false);
+  const [trialType, setTrialType] = useState('extension');
   
   useEffect(() => {
     // Scroll to top when component mounts
@@ -89,6 +96,50 @@ const GameScoreSheet = ({ gameState, onNewGame }) => {
     // Set state
     setPlayerStats(stats);
   };
+
+  // NEW: Handle new game button click - show confirmation
+  const handleNewGameClick = () => {
+    setShowNewGameConfirm(true);
+  };
+
+  // NEW: Handle confirmation choices
+  const handleConfirmNewGame = () => {
+    setShowNewGameConfirm(false);
+    onNewGame(); // Start new game directly
+  };
+
+  const handleGetMoreDeals = () => {
+    console.log('Get More Deals clicked - showing trial popup');
+    setShowNewGameConfirm(false);
+    
+    // Small delay to ensure state updates properly
+    setTimeout(() => {
+      setTrialType('extension');
+      setShowTrialPopup(true);
+      console.log('Trial popup state set:', { trialType: 'extension', showTrialPopup: true });
+    }, 100);
+  };
+
+  // NEW: Handle trial popup close
+  const handleTrialPopupClose = () => {
+    console.log('Trial popup closing');
+    setShowTrialPopup(false);
+  };
+
+  // NEW: Handle trial extension (including test codes)
+  const handleTrialExtended = () => {
+    console.log('Trial extended successfully');
+    setShowTrialPopup(false);
+    // If it was a test code (sum=99), the TrialManager will handle the reset
+    // For regular codes, just close the popup
+  };
+
+  // NEW: Handle extension request
+  const handleExtensionRequest = () => {
+    console.log('Extension request - keeping popup open');
+    // Keep the popup open, it's already showing extension
+  };
+
 // Format contract for display
   const formatContract = (deal) => {
     if (!deal || !deal.contract) return "No contract";
@@ -161,6 +212,7 @@ const GameScoreSheet = ({ gameState, onNewGame }) => {
       bonusWinner: scores.bonusNS > scores.bonusEW ? "North-South" : (scores.bonusEW > scores.bonusNS ? "East-West" : "Tie")
     };
   };
+
 // Calculate game statistics
   const getGameStats = () => {
     if (!gameState.deals || gameState.deals.length === 0) {
@@ -296,6 +348,7 @@ const GameScoreSheet = ({ gameState, onNewGame }) => {
     
     return bestPlayer;
   };
+
 // Export results to PDF
   const exportToPDF = () => {
     const scores = getFinalScores();
@@ -402,6 +455,7 @@ const GameScoreSheet = ({ gameState, onNewGame }) => {
     // Close export menu
     setShowExportMenu(false);
   };
+
 // Rendering begins here
   const scores = getFinalScores();
   const winners = getWinners();
@@ -575,12 +629,13 @@ const GameScoreSheet = ({ gameState, onNewGame }) => {
             </div>
             
             <div className="action-row">
-              <button className="new-game-button" onClick={onNewGame}>
+              <button className="new-game-button" onClick={handleNewGameClick}>
                 Start New Game
               </button>
             </div>
           </div>
         )}
+
 {/* Score Sheet Tab */}
         {activeTab === 'scoresheet' && (
           <div className="scoresheet-tab">
@@ -698,12 +753,13 @@ const GameScoreSheet = ({ gameState, onNewGame }) => {
             </div>
             
             <div className="action-row">
-              <button className="new-game-button" onClick={onNewGame}>
+              <button className="new-game-button" onClick={handleNewGameClick}>
                 Start New Game
               </button>
             </div>
           </div>
         )}
+
 {/* Analysis Tab */}
         {activeTab === 'analysis' && (
           <div className="analysis-tab">
@@ -869,13 +925,13 @@ const GameScoreSheet = ({ gameState, onNewGame }) => {
             </div>
             
             <div className="action-row">
-              <button className="new-game-button" onClick={onNewGame}>
+              <button className="new-game-button" onClick={handleNewGameClick}>
                 Start New Game
               </button>
             </div>
           </div>
         )}
-</div>
+      </div>
       
       {/* Deal Detail Popup */}
       {selectedDeal && (
@@ -1005,6 +1061,72 @@ const GameScoreSheet = ({ gameState, onNewGame }) => {
               </div>
             )}
           </div>
+        </div>
+      )}
+
+      {/* NEW: New Game Confirmation Popup */}
+      {showNewGameConfirm && (
+        <div className="popup-overlay">
+          <div className="new-game-confirm-popup">
+            <h3>Confirm Start New Game</h3>
+            <p>What would you like to do?</p>
+            
+            <div className="confirm-actions">
+              <button 
+                className="confirm-new-game-btn" 
+                onClick={handleConfirmNewGame}
+              >
+                Start New Game
+              </button>
+              
+              <button 
+                className="get-more-deals-btn" 
+                onClick={handleGetMoreDeals}
+              >
+                🎁 Get More Deals
+              </button>
+              
+              <button 
+                className="cancel-confirm-btn" 
+                onClick={() => setShowNewGameConfirm(false)}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* NEW: Trial Popup for extension codes */}
+      {showTrialPopup && trialManager && (
+        <div style={{ zIndex: 2000 }}>
+          {console.log('Rendering TrialPopup with:', { showTrialPopup, trialType, trialManager: !!trialManager })}
+          <TrialPopup
+            trialManager={trialManager}
+            onClose={handleTrialPopupClose}
+            onExtended={handleTrialExtended}
+            onExtensionRequest={handleExtensionRequest}
+            type={trialType}
+          />
+        </div>
+      )}
+
+      {/* DEBUG: Show current state */}
+      {process.env.NODE_ENV === 'development' && (
+        <div style={{ 
+          position: 'fixed', 
+          top: 10, 
+          right: 10, 
+          background: 'rgba(0,0,0,0.8)', 
+          color: 'white', 
+          padding: '10px', 
+          fontSize: '12px',
+          zIndex: 3000 
+        }}>
+          <div>showTrialPopup: {showTrialPopup.toString()}</div>
+          <div>trialType: {trialType}</div>
+          <div>showNewGameConfirm: {showNewGameConfirm.toString()}</div>
+          <div>trialManager: {trialManager ? 'exists' : 'null'}</div>
         </div>
       )}
     </div>

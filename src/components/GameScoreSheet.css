@@ -1,505 +1,554 @@
-/* GameScoreSheet.css - Redesigned for mobile-first approach */
+/* GameScoreSheet.css - Enhanced with new game confirmation popup */
 
 .game-score-sheet {
-  width: 100%;
+  padding: 15px;
   max-width: 100%;
-  margin: 0 auto;
-  padding: 0;
-  font-family: Arial, sans-serif;
   background-color: #f5f7fa;
-  color: #333;
+  height: 100%;
+  overflow-y: auto;
 }
 
-/* Header */
 .score-sheet-header {
-  background-color: #1e5c8b;
-  color: white;
-  padding: 15px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  position: relative;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #e0e0e0;
 }
 
 .score-sheet-header h2 {
   margin: 0;
-  font-size: 20px;
-  font-weight: bold;
+  color: #1e5c8b;
+  font-size: 24px;
 }
 
-/* Export button and menu */
 .header-actions {
   position: relative;
 }
 
 .export-btn {
-  background-color: rgba(255, 255, 255, 0.2);
+  background: #6c757d;
   color: white;
   border: none;
-  border-radius: 6px;
-  padding: 8px 12px;
-  font-size: 15px;
+  border-radius: 8px;
+  padding: 8px 16px;
+  cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 8px;
-  cursor: pointer;
-}
-
-.export-btn .icon {
-  font-size: 18px;
+  gap: 5px;
+  font-size: 14px;
 }
 
 .export-menu {
   position: absolute;
   top: 100%;
   right: 0;
-  background-color: white;
+  background: white;
+  border: 1px solid #ddd;
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  z-index: 100;
-  overflow: hidden;
-  margin-top: 5px;
-  width: 180px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  z-index: 1000;
+  min-width: 180px;
 }
 
 .export-menu button {
   width: 100%;
-  text-align: left;
-  padding: 12px 15px;
+  padding: 10px 15px;
   border: none;
   background: none;
+  text-align: left;
+  cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 10px;
-  cursor: pointer;
-  font-size: 15px;
-  color: #333;
+  gap: 8px;
+  border-bottom: 1px solid #eee;
+}
+
+.export-menu button:last-child {
+  border-bottom: none;
 }
 
 .export-menu button:hover {
-  background-color: #f0f0f0;
-}
-
-.export-menu .icon {
-  font-size: 20px;
+  background: #f8f9fa;
 }
 
 /* Tab Navigation */
 .tab-navigation {
   display: flex;
-  background-color: #f0f3f8;
-  border-bottom: 1px solid #ddd;
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
 .tab-button {
   flex: 1;
-  padding: 15px 10px;
-  background: none;
+  padding: 15px 20px;
+  background: #f8f9fa;
   border: none;
-  font-weight: bold;
-  font-size: 15px;
-  color: #666;
-  position: relative;
   cursor: pointer;
-  min-height: 50px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #6c757d;
+  transition: all 0.3s ease;
 }
 
 .tab-button.active {
-  color: #1e5c8b;
+  background: #1e5c8b;
+  color: white;
 }
 
-.tab-button.active:after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 3px;
-  background-color: #1e5c8b;
+.tab-button:hover:not(.active) {
+  background: #e9ecef;
 }
 
 /* Tab Content */
 .tab-content {
-  padding: 15px;
-}
-
-/* Common Section Styles */
-.summary-tab,
-.scoresheet-tab,
-.analysis-tab {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.analysis-section h3,
-.stats-section h3 {
-  font-size: 18px;
-  color: #1e5c8b;
-  margin: 0 0 15px 0;
-  padding-bottom: 8px;
-  border-bottom: 1px solid #e0e5ee;
+  min-height: 400px;
 }
 
 /* Score Cards */
 .score-cards {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 30px;
 }
 
 .score-card {
-  background-color: white;
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
-
-.party-bridge-card {
-  border-top: 4px solid #1e5c8b;
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  border-left: 5px solid #1e5c8b;
 }
 
 .bonus-bridge-card {
-  border-top: 4px solid #3c8c5c;
-}
-
-.card-header {
-  padding: 15px;
-  background-color: #fafafa;
-  border-bottom: 1px solid #eee;
+  border-left-color: #28a745;
 }
 
 .card-header h3 {
-  margin: 0;
-  font-size: 16px;
-  color: #444;
-}
-
-.card-content {
-  padding: 15px;
+  margin: 0 0 15px 0;
+  color: #1e5c8b;
+  font-size: 18px;
 }
 
 .team-scores {
+  display: flex;
+  justify-content: space-between;
   margin-bottom: 15px;
 }
 
 .team {
-  display: flex;
-  justify-content: space-between;
-  padding: 5px 0;
+  text-align: center;
 }
 
 .team-name {
-  font-size: 15px;
+  display: block;
+  font-size: 14px;
+  color: #6c757d;
+  margin-bottom: 5px;
 }
 
 .team-score {
-  font-size: 18px;
+  display: block;
+  font-size: 28px;
   font-weight: bold;
+  color: #1e5c8b;
 }
 
 .winner-banner {
-  background-color: #f8f9fa;
-  padding: 10px;
-  border-radius: 6px;
   text-align: center;
-  font-size: 15px;
+  padding: 10px;
+  background: #e8f4f8;
+  border-radius: 8px;
+  font-weight: 500;
 }
 
 .winner-name {
+  color: #28a745;
   font-weight: bold;
-  color: #3c8c5c;
 }
 
 .info-button {
   width: 100%;
-  padding: 10px;
   margin-top: 10px;
-  background-color: white;
-  border: 1px solid #3c8c5c;
-  color: #3c8c5c;
+  padding: 8px;
+  background: transparent;
+  border: 1px solid #28a745;
+  color: #28a745;
   border-radius: 6px;
-  font-size: 14px;
   cursor: pointer;
+  font-size: 12px;
 }
 
 .info-button:hover {
-  background-color: #f0f9f5;
+  background: #f0f9f5;
 }
 
-/* Stats Grid */
+/* Game Statistics */
 .stats-section {
-  background-color: white;
-  border-radius: 10px;
-  padding: 15px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 30px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.stats-section h3 {
+  margin: 0 0 20px 0;
+  color: #1e5c8b;
+  font-size: 18px;
 }
 
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 15px;
 }
 
 .stat-card {
-  background-color: #f9f9f9;
+  background: #f8f9fa;
+  padding: 15px;
   border-radius: 8px;
-  padding: 12px;
+  text-align: center;
+  border: 1px solid #e9ecef;
+}
+
+.stat-card.highlight {
+  background: #e8f4f8;
+  border-color: #1e5c8b;
 }
 
 .stat-label {
-  font-size: 13px;
-  color: #666;
+  display: block;
+  font-size: 12px;
+  color: #6c757d;
   margin-bottom: 5px;
 }
 
 .stat-value {
-  font-size: 18px;
+  display: block;
+  font-size: 20px;
   font-weight: bold;
   color: #1e5c8b;
-  display: flex;
-  flex-direction: column;
 }
 
 .stat-detail {
-  font-size: 13px;
-  font-weight: normal;
-  color: #666;
-  margin-top: 3px;
+  display: block;
+  font-size: 11px;
+  color: #6c757d;
+  margin-top: 2px;
 }
 
-.stat-card.highlight {
-  background-color: #e8f4ff;
-  grid-column: span 2;
-}
-
-/* Deal Cards for mobile */
+/* Deal Cards (Mobile) */
 .deal-cards {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 15px;
+  margin-bottom: 20px;
 }
 
 .deal-card {
-  background-color: white;
+  background: white;
   border-radius: 10px;
-  overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  padding: 15px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  border-left: 4px solid #1e5c8b;
+}
+
+.total-card {
+  border-left-color: #28a745;
+  background: #f8fff9;
 }
 
 .deal-header {
-  padding: 12px;
-  background-color: #f0f3f8;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 10px;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 5px;
 }
 
 .deal-number {
   font-weight: bold;
-  font-size: 15px;
+  color: #1e5c8b;
+  font-size: 14px;
 }
 
 .deal-contract {
-  font-size: 15px;
+  font-family: monospace;
+  font-size: 13px;
+  color: #495057;
 }
 
 .deal-result {
   font-weight: bold;
-  padding: 3px 8px;
-  border-radius: 4px;
+  font-size: 13px;
 }
 
 .deal-result.made {
-  background-color: #d4edda;
-  color: #155724;
+  color: #28a745;
 }
 
 .deal-result.down {
-  background-color: #f8d7da;
-  color: #721c24;
+  color: #dc3545;
 }
 
 .deal-scores {
-  padding: 12px;
+  margin-bottom: 10px;
 }
 
 .score-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
-}
-
-.score-row:last-child {
-  margin-bottom: 0;
+  margin-bottom: 5px;
 }
 
 .score-label {
   font-weight: bold;
-  font-size: 15px;
+  color: #6c757d;
+  font-size: 13px;
 }
 
 .score-values {
   display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.regular-score {
-  font-size: 16px;
-}
-
-.bonus-score {
-  color: #3c8c5c;
-  font-size: 15px;
-}
-
-.details-button {
-  width: 100%;
-  padding: 10px;
-  background-color: #1e5c8b;
-  color: white;
-  border: none;
-  font-weight: bold;
-  font-size: 14px;
-  cursor: pointer;
-}
-
-.total-card {
-  background-color: #f0f3f8;
-  border-top: 3px solid #1e5c8b;
-}
-
-/* Desktop Table (hidden on mobile) */
-.desktop-table-container {
-  display: none;
-}
-
-/* Category Grid for Analysis */
-.category-grid,
-.hcp-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
   gap: 10px;
 }
 
-.category-card,
-.hcp-card {
-  background-color: white;
-  border-radius: 8px;
-  padding: 15px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-  text-align: center;
+.regular-score {
+  font-weight: bold;
+  color: #1e5c8b;
+  font-size: 14px;
 }
 
-.category-title,
-.hcp-title {
+.bonus-score {
+  font-weight: 500;
+  color: #28a745;
+  font-size: 12px;
+}
+
+.details-button {
+  background: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 10px;
+  font-size: 11px;
+  cursor: pointer;
+  width: 100%;
+}
+
+.details-button:hover {
+  background: #5a6268;
+}
+
+/* Desktop Table (Hidden on Mobile) */
+.desktop-table-container {
+  display: none;
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
+}
+
+.deals-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.deals-table th {
+  text-align: left;
+  padding: 12px 8px;
+  background: #f8f9fa;
+  border-bottom: 2px solid #e0e0e0;
+  font-weight: bold;
+  color: #1e5c8b;
   font-size: 14px;
-  color: #666;
+}
+
+.deals-table td {
+  padding: 10px 8px;
+  border-bottom: 1px solid #e0e0e0;
+  font-size: 13px;
+}
+
+.deals-table td.made {
+  color: #28a745;
+  font-weight: bold;
+}
+
+.deals-table td.down {
+  color: #dc3545;
+  font-weight: bold;
+}
+
+.deals-table tfoot td {
+  font-weight: bold;
+  background: #f8f9fa;
+  border-top: 2px solid #1e5c8b;
+}
+
+.detail-button {
+  background: #1e5c8b;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.detail-button:hover {
+  background: #174b73;
+}
+
+/* Analysis Tab Specific */
+.analysis-section {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.analysis-section h3 {
+  margin: 0 0 15px 0;
+  color: #1e5c8b;
+  font-size: 18px;
+}
+
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 15px;
+}
+
+.category-card {
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 8px;
+  text-align: center;
+  border: 1px solid #e9ecef;
+}
+
+.category-title {
+  font-size: 12px;
+  color: #6c757d;
   margin-bottom: 8px;
 }
 
-.category-value,
+.category-value {
+  font-size: 24px;
+  font-weight: bold;
+  color: #1e5c8b;
+  margin-bottom: 4px;
+}
+
+.category-percent {
+  font-size: 11px;
+  color: #28a745;
+}
+
+.hcp-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 15px;
+}
+
+.hcp-card {
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 8px;
+  text-align: center;
+  border: 1px solid #e9ecef;
+}
+
+.hcp-title {
+  font-size: 12px;
+  color: #6c757d;
+  margin-bottom: 8px;
+}
+
 .hcp-value {
-  font-size: 22px;
+  font-size: 20px;
   font-weight: bold;
   color: #1e5c8b;
 }
 
-.category-percent {
-  font-size: 14px;
-  color: #666;
-  margin-top: 5px;
-}
-
-/* Player Teams */
 .player-teams {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 20px;
 }
 
-.team-column {
-  background-color: white;
-  border-radius: 10px;
-  padding: 15px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
-
 .team-column h4 {
-  margin: 0 0 15px 0;
-  font-size: 16px;
   color: #1e5c8b;
-  padding-bottom: 8px;
-  border-bottom: 1px solid #eee;
+  margin: 0 0 15px 0;
+  text-align: center;
 }
 
 .player-card {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 15px;
   margin-bottom: 15px;
-  padding-bottom: 15px;
-  border-bottom: 1px solid #eee;
-}
-
-.player-card:last-child {
-  margin-bottom: 0;
-  padding-bottom: 0;
-  border-bottom: none;
+  border: 1px solid #e9ecef;
 }
 
 .player-name {
   font-weight: bold;
-  font-size: 16px;
+  color: #1e5c8b;
   margin-bottom: 10px;
+  text-align: center;
 }
 
-.player-stats {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-.stat-item {
+.player-stats .stat-item {
   display: flex;
   justify-content: space-between;
-  font-size: 14px;
+  margin-bottom: 5px;
+  font-size: 12px;
 }
 
-.stat-item .stat-label {
-  margin-bottom: 0;
+.player-stats .stat-label {
+  color: #6c757d;
 }
 
-.stat-item .stat-value {
-  font-size: 14px;
+.player-stats .stat-value {
+  font-weight: bold;
+  color: #1e5c8b;
 }
 
-/* Action Button */
+/* Action Row */
 .action-row {
-  margin-top: 10px;
-  display: flex;
-  justify-content: center;
+  text-align: center;
+  margin-top: 30px;
 }
 
 .new-game-button {
-  background-color: #3c8c5c;
+  background: linear-gradient(135deg, #28a745, #20c997);
   color: white;
   border: none;
-  border-radius: 6px;
-  padding: 16px 24px;
-  font-size: 16px;
+  border-radius: 25px;
+  padding: 15px 40px;
+  font-size: 18px;
   font-weight: bold;
-  width: 100%;
-  max-width: 300px;
   cursor: pointer;
+  box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+  transition: all 0.3s ease;
 }
 
 .new-game-button:hover {
-  background-color: #357a4f;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
 }
 
-/* Deal Detail Popup */
+/* Popup Overlays */
 .popup-overlay {
   position: fixed;
   top: 0;
@@ -507,22 +556,23 @@
   right: 0;
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.7);
-  z-index: 1000;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 15px;
+  z-index: 1000;
+  padding: 20px;
 }
 
 .deal-detail-popup {
-  background-color: white;
-  border-radius: 12px;
-  width: 100%;
+  background: white;
+  border-radius: 15px;
+  width: 90%;
   max-width: 500px;
-  max-height: 85vh;
+  max-height: 80vh;
   overflow-y: auto;
-  position: relative;
   padding: 20px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  position: relative;
 }
 
 .close-button {
@@ -532,24 +582,26 @@
   background: none;
   border: none;
   font-size: 24px;
-  font-weight: bold;
-  color: #777;
+  color: #999;
   cursor: pointer;
-  line-height: 1;
-  padding: 0;
   width: 30px;
   height: 30px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
+.close-button:hover {
+  background: #f0f0f0;
+  color: #333;
+}
+
 .deal-detail-popup h3 {
   margin: 0 0 20px 0;
-  font-size: 20px;
   color: #1e5c8b;
-  padding-bottom: 10px;
-  border-bottom: 1px solid #eee;
+  text-align: center;
+  padding-right: 30px;
 }
 
 .detail-section {
@@ -557,272 +609,169 @@
 }
 
 .detail-section h4 {
-  font-size: 16px;
-  color: #3c8c5c;
+  color: #1e5c8b;
   margin: 0 0 10px 0;
+  font-size: 16px;
 }
 
 .detail-grid {
   display: grid;
-  grid-template-columns: 1fr;
   gap: 8px;
 }
 
 .detail-item {
   display: flex;
-  flex-direction: column;
-  gap: 3px;
+  justify-content: space-between;
+  padding: 5px 0;
+  border-bottom: 1px solid #f0f0f0;
 }
 
 .detail-label {
+  font-weight: bold;
+  color: #6c757d;
   font-size: 13px;
-  color: #666;
 }
 
 .detail-value {
-  font-size: 15px;
-  font-weight: bold;
+  font-weight: 500;
+  color: #495057;
+  font-size: 13px;
 }
 
 .calculation-steps {
-  margin: 10px 0 0 0;
-  padding-left: 25px;
+  margin: 10px 0 0 20px;
+  padding: 0;
 }
 
 .calculation-steps li {
-  margin-bottom: 8px;
-  font-size: 14px;
+  margin: 5px 0;
+  font-size: 12px;
+  color: #495057;
 }
 
-/* Media Queries */
+/* NEW: New Game Confirmation Popup */
+.new-game-confirm-popup {
+  background: white;
+  border-radius: 15px;
+  padding: 30px;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  text-align: center;
+}
+
+.new-game-confirm-popup h3 {
+  margin: 0 0 15px 0;
+  color: #1e5c8b;
+  font-size: 20px;
+}
+
+.new-game-confirm-popup p {
+  margin: 0 0 25px 0;
+  color: #6c757d;
+  font-size: 16px;
+}
+
+.confirm-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.confirm-new-game-btn {
+  background: linear-gradient(135deg, #28a745, #20c997);
+  color: white;
+  border: none;
+  border-radius: 25px;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.confirm-new-game-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+}
+
+.get-more-deals-btn {
+  background: linear-gradient(135deg, #3498db, #2980b9);
+  color: white;
+  border: none;
+  border-radius: 25px;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.get-more-deals-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+}
+
+.cancel-confirm-btn {
+  background: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 25px;
+  padding: 10px 20px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cancel-confirm-btn:hover {
+  background: #5a6268;
+}
+
+/* Responsive Design */
 @media (min-width: 768px) {
-  .game-score-sheet {
-    padding: 0;
-    max-width: 1000px;
-    margin: 0 auto;
-  }
-  
-  .score-sheet-header h2 {
-    font-size: 24px;
-  }
-  
-  .tab-content {
-    padding: 25px;
-  }
-  
-  /* Show two score cards in a row */
-  .score-cards {
-    flex-direction: row;
-  }
-  
-  .score-card {
-    flex: 1;
-  }
-  
-  /* More columns for stats */
-  .stats-grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
-  
-  .stat-card.highlight {
-    grid-column: span 1;
-  }
-  
-  /* Show desktop table */
   .desktop-table-container {
     display: block;
-    background-color: white;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    margin-top: 20px;
   }
   
-  .deals-table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  
-  .deals-table th, 
-  .deals-table td {
-    padding: 12px 15px;
-    text-align: left;
-    border-bottom: 1px solid #eee;
-  }
-  
-  .deals-table th {
-    background-color: #f0f3f8;
-    font-weight: bold;
-    color: #1e5c8b;
-  }
-  
-  .deals-table td.made {
-    color: #155724;
-  }
-  
-  .deals-table td.down {
-    color: #721c24;
-  }
-  
-  .detail-button {
-    background-color: #1e5c8b;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    padding: 8px 12px;
-    font-size: 13px;
-    cursor: pointer;
-    min-width: 80px;
-  }
-  
-  /* Hide mobile deal cards on desktop */
   .deal-cards {
     display: none;
   }
   
-  /* Player teams in two columns */
+  .score-cards {
+    grid-template-columns: 1fr 1fr;
+  }
+  
   .player-teams {
-    flex-direction: row;
-  }
-  
-  .team-column {
-    flex: 1;
-  }
-  
-  /* Detail popup improvements */
-  .detail-grid {
     grid-template-columns: 1fr 1fr;
   }
 }
 
-/* Larger screens */
-@media (min-width: 1024px) {
-  .game-score-sheet {
-    max-width: 1200px;
+@media (max-width: 767px) {
+  .score-cards {
+    grid-template-columns: 1fr;
+  }
+  
+  .player-teams {
+    grid-template-columns: 1fr;
   }
   
   .stats-grid {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(2, 1fr);
   }
   
-  .deal-detail-popup {
-    max-width: 700px;
-  }
-}
-/* Add this to your GameScoreSheet.css file to fix the table overflow issue */
-
-/* Desktop Table Container - ensure it doesn't overflow */
-.desktop-table-container {
-  display: none;
-  width: 100%;
-  overflow-x: auto; /* Allow horizontal scrolling if needed */
-  margin-bottom: 20px;
-}
-
-/* Table styling to ensure all columns are visible */
-.deals-table {
-  width: 100%;
-  min-width: 800px; /* Ensure minimum width to accommodate all columns */
-  border-collapse: collapse;
-  table-layout: auto; /* Let columns size based on content */
-}
-
-.deals-table th, 
-.deals-table td {
-  padding: 12px 8px;
-  text-align: center;
-  border-bottom: 1px solid #eee;
-  white-space: nowrap; /* Prevent text wrapping */
-  min-width: 60px; /* Minimum column width */
-}
-
-.deals-table th {
-  background-color: #f0f3f8;
-  font-weight: bold;
-  color: #1e5c8b;
-  border-bottom: 2px solid #1e5c8b;
-}
-
-/* Specific column widths to ensure even distribution */
-.deals-table th:nth-child(1), /* # */
-.deals-table td:nth-child(1) {
-  width: 8%;
-  min-width: 40px;
-}
-
-.deals-table th:nth-child(2), /* Contract */
-.deals-table td:nth-child(2) {
-  width: 15%;
-  min-width: 100px;
-}
-
-.deals-table th:nth-child(3), /* Result */
-.deals-table td:nth-child(3) {
-  width: 10%;
-  min-width: 60px;
-}
-
-.deals-table th:nth-child(4), /* NS */
-.deals-table td:nth-child(4),
-.deals-table th:nth-child(5), /* EW */
-.deals-table td:nth-child(5),
-.deals-table th:nth-child(6), /* Bonus NS */
-.deals-table td:nth-child(6),
-.deals-table th:nth-child(7), /* Bonus EW */
-.deals-table td:nth-child(7) {
-  width: 12%;
-  min-width: 70px;
-}
-
-.deals-table th:nth-child(8), /* Details button */
-.deals-table td:nth-child(8) {
-  width: 11%;
-  min-width: 80px;
-}
-
-/* Totals row styling */
-.deals-table tfoot tr {
-  font-weight: bold;
-  background-color: #f8f9fa;
-  border-top: 2px solid #1e5c8b;
-}
-
-.deals-table tfoot td {
-  border-bottom: none;
-}
-
-/* Detail button styling */
-.detail-button {
-  background-color: #1e5c8b;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  padding: 6px 10px;
-  font-size: 12px;
-  cursor: pointer;
-  min-width: 60px;
-}
-
-.detail-button:hover {
-  background-color: #174b73;
-}
-
-/* Media query to show desktop table on larger screens */
-@media (min-width: 768px) {
-  .desktop-table-container {
-    display: block;
+  .category-grid {
+    grid-template-columns: repeat(3, 1fr);
   }
   
-  /* Hide mobile deal cards on desktop */
-  .deal-cards {
-    display: none;
+  .hcp-grid {
+    grid-template-columns: 1fr;
   }
-}
 
-/* For very wide screens, center the content */
-@media (min-width: 1200px) {
-  .desktop-table-container {
-    max-width: 1100px;
-    margin: 0 auto 20px auto;
+  .confirm-actions {
+    gap: 10px;
+  }
+  
+  .new-game-confirm-popup {
+    padding: 20px;
   }
 }

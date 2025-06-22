@@ -1,385 +1,595 @@
-// TrialPopup.js - Complete version with 7-character code input and validation
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './TrialPopup.css';
 
-const TrialPopup = ({ 
-  trialManager, 
-  onClose,
-  onExtended,
-  type = 'warning' // 'warning', 'expired', or 'info'
-}) => {
-  const [showExtensionForm, setShowExtensionForm] = useState(false);
-  const [extensionCode, setExtensionCode] = useState(['', '', '', '', '', '', '']); // Array for 7 characters
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [codeError, setCodeError] = useState('');
+const TrialPopup = ({ trialManager, onClose, onExtended, onExtensionRequest, type }) => {
+  const [codeDigits, setCodeDigits] = useState(['', '', '', '', '', '', '']);
+  const [extensionResult, setExtensionResult] = useState(null);
+  const [showExtensionInput, setShowExtensionInput] = useState(false);
 
-  // Get trial statistics with safety checks
-  const stats = trialManager ? trialManager.getStats() : null;
-  const remainingDeals = trialManager ? trialManager.getRemainingDeals() : 0;
-
-  // Handle sending feedback email
-  const handleSendFeedback = () => {
-    const emailData = trialManager.generateFeedbackEmail();
-    if (emailData) {
-      const mailtoLink = `mailto:mike.chris.smith@gmail.com?subject=${emailData.subject}&body=${emailData.body}`;
-      window.open(mailtoLink);
+  useEffect(() => {
+    if (type === 'extension') {
+      setShowExtensionInput(false);
     }
-  };
+  }, [type]);
 
-  // Handle individual character input (letters A-Z or digits 0-9 for first 6, digit 1-9 for last)
-  const handleDigitChange = (index, event) => {
-    let value = event.target.value.toUpperCase();
+  const handleDigitChange = (index, value) => {
+    if (value.length > 1) return;
     
-    if (index < 6) {
-      // First 6 positions: allow letters A-Z or digits 0-9
-      if (value && !/^[A-Z0-9]$/.test(value)) {
-        event.target.value = extensionCode[index]; // Restore previous value
-        return;
-      }
-    } else {
-      // Last position: only allow digits 1-9
-      if (value && !/^[1-9]$/.test(value)) {
-        event.target.value = extensionCode[index]; // Restore previous value
-        return;
-      }
-    }
-    
-    // Update the code array
-    const newCode = [...extensionCode];
-    newCode[index] = value;
-    setExtensionCode(newCode);
-    setCodeError('');
-    
-    // Move to next box if character entered
+    const newDigits = [...codeDigits];
+    newDigits[index] = value.toUpperCase();
+    setCodeDigits(newDigits);
+
     if (value && index < 6) {
-      setTimeout(() => {
-        const nextInput = document.getElementById(`digit-${index + 1}`);
-        if (nextInput) {
-          nextInput.focus();
-          nextInput.select();
-        }
-      }, 10);
+      const nextInput = document.getElementById(`digit-${index + 1}`);
+      if (nextInput) nextInput.focus();
     }
   };
 
-  // Handle backspace in digit inputs - SIMPLIFIED
-  const handleDigitKeyDown = (index, event) => {
-    if (event.key === 'Backspace') {
-      if (!extensionCode[index] && index > 0) {
-        // Move to previous box if current is empty
-        const prevInput = document.getElementById(`digit-${index - 1}`);
-        if (prevInput) {
-          prevInput.focus();
-          prevInput.select();
-        }
-      } else {
-        // Clear current box
-        const newCode = [...extensionCode];
-        newCode[index] = '';
-        setExtensionCode(newCode);
-      }
+  const handleKeyDown = (index, e) => {
+    if (e.key === 'Backspace' && !codeDigits[index] && index > 0) {
+      const prevInput = document.getElementById(`digit-${index - 1}`);
+      if (prevInput) prevInput.focus();
     }
   };
 
-  // Validate code format in real-time (letters/digits + digit)
-  // Custom mapping: A=3, B=4, C=5, ..., Z=28, and 0=0, 1=1, ..., 9=9
-  const validateCode = (codeArray) => {
-    const codeString = codeArray.join('');
-    if (codeString.length !== 7) return 'Code must be exactly 7 characters';
-    
-    // Check first 6 are letters A-Z or digits 0-9
-    const firstSix = codeString.substring(0, 6);
-    if (!/^[A-Z0-9]{6}$/.test(firstSix)) return 'First 6 must be letters A-Z or digits 0-9';
-    
-    // Check last is digit 1-9
-    const lastChar = codeString.substring(6, 7);
-    if (!/^[1-9]$/.test(lastChar)) return 'Last character must be digit 1-9';
-    
-    // Calculate sum of first 6 characters
-    const sum = firstSix.split('').reduce((acc, char) => {
-      if (char >= 'A' && char <= 'Z') {
-        // Letters: A=3, B=4, etc.
-        return acc + (char.charCodeAt(0) - 62); // A=65, so 65-62=3
-      } else {
-        // Digits: 0=0, 1=1, etc.
-        return acc + parseInt(char);
-      }
-    }, 0);
-    
-    if (sum !== 100) return 'Invalid code format';
-    
-    return null;
-  };
+  const handleExtensionSubmit = () => {
+    const code = codeDigits.join('');
+    if (code.length !== 7) return;
 
-  // Handle extension code submission
-  const handleExtensionSubmit = async (e) => {
-    e.preventDefault();
+    setExtensionResult(null);
     
-    // Validate format first
-    const validationError = validateCode(extensionCode);
-    if (validationError) {
-      setCodeError(validationError);
-      return;
-    }
-    
-    setIsSubmitting(true);
-    setCodeError('');
-
     try {
-      // Convert array to string and submit to trial manager
-      const codeString = extensionCode.join('');
-      const result = trialManager.extendTrial(codeString);
-      
-      if (result.success) {
-        // Success message with details
-        const message = `Success! ${result.message}\n\nDeals added: ${result.dealsAdded}\nTotal deals: ${result.totalDeals}\nRemaining: ${result.remainingDeals}`;
-        alert(message);
-        onExtended && onExtended();
-        setShowExtensionForm(false);
-        setExtensionCode(['', '', '', '', '', '', '']);
-        // If it's not just a warning, close the popup completely
-        if (type !== 'warning') onClose();
-      } else {
-        // Show error from trial manager (includes "already used" message)
-        setCodeError(result.message);
+      const result = trialManager.extendTrial(code);
+      setExtensionResult(result);
+
+      if (result.success && !result.isTestMode) {
+        setTimeout(() => {
+          setCodeDigits(['', '', '', '', '', '', '']);
+          setShowExtensionInput(false);
+          setExtensionResult(null);
+          onExtended();
+        }, 3000);
       }
     } catch (error) {
-      setCodeError('An error occurred while processing the extension code.');
-    } finally {
-      setIsSubmitting(false);
+      console.error('Error in extendTrial:', error);
+      setExtensionResult({
+        success: false,
+        message: 'Error processing extension code: ' + error.message
+      });
     }
   };
 
-  // Get popup content based on type
-  const getContent = () => {
-    if (type === 'expired') {
-      return {
-        title: '⏰ Trial Period Expired',
-        message: `Your evaluation period has ended after ${stats ? stats.dealsPlayed : 0} deals. Thank you for testing Bonus Bridge!`,
-        emoji: '🚫',
-        color: 'red'
+  const handleTestModeClose = () => {
+    setCodeDigits(['', '', '', '', '', '', '']);
+    setShowExtensionInput(false);
+    setExtensionResult(null);
+    onExtended();
+  };
+
+  const getTrialStats = () => {
+    try {
+      return trialManager.getStats() || {
+        dealsPlayed: 0,
+        maxDeals: 50,
+        remainingDeals: 50,
+        gamesCompleted: 0,
+        daysUsed: 1
       };
-    } else if (type === 'warning') {
+    } catch (e) {
       return {
-        title: '⚠️ Trial Nearly Complete',
-        message: `You have ${remainingDeals} deal${remainingDeals === 1 ? '' : 's'} remaining in your evaluation period.`,
-        emoji: '⚠️',
-        color: 'orange'
-      };
-    } else {
-      return {
-        title: '🎯 Welcome to Bonus Bridge',
-        message: `You have ${remainingDeals} deals to evaluate the application.`,
-        emoji: '🎯',
-        color: 'blue'
+        dealsPlayed: 0,
+        maxDeals: 50,
+        remainingDeals: 50,
+        gamesCompleted: 0,
+        daysUsed: 1
       };
     }
   };
 
-  const content = getContent();
+  const stats = getTrialStats();
+  const canClose = type !== 'expired';
+  const isCodeComplete = codeDigits.every(digit => digit !== '');
 
   return (
     <div className="trial-popup-overlay">
-      <div className={`trial-popup trial-popup-${content.color}`}>
-        {/* Header */}
-        <div className="trial-popup-header">
-          <h2>{content.title}</h2>
-          {type !== 'expired' && (
-            <button className="close-btn" onClick={onClose}>×</button>
+      <div className="trial-popup">
+        <div className="trial-header">
+          <h2>
+            {type === 'expired' ? '🚫 Trial Period Expired' : 
+             type === 'warning' ? '⚠️ Trial Nearly Complete' : 
+             type === 'extension' ? '🎁 Get More Deals' :
+             '🎯 Welcome to Bonus Bridge'}
+          </h2>
+          {canClose && (
+            <button className="trial-close-btn" onClick={onClose}>×</button>
           )}
         </div>
 
-        {/* Content */}
-        <div className="trial-popup-content">
-          <div className="trial-message">
-            <span className="trial-emoji">{content.emoji}</span>
-            <p>{content.message}</p>
-          </div>
-
-          {/* Usage Statistics */}
-          {stats && (
-            <div className="trial-stats">
-              <h3>📊 Your Usage</h3>
-              <div className="stats-grid">
-                <div className="stat-item">
-                  <span className="stat-label">Deals Played:</span>
-                  <span className="stat-value">{stats.dealsPlayed}/{stats.maxDeals}</span>
-                </div>
-                <div className="stat-item">
-                  <span className="stat-label">Remaining:</span>
-                  <span className="stat-value">{stats.remainingDeals}</span>
-                </div>
-                <div className="stat-item">
-                  <span className="stat-label">Games Completed:</span>
-                  <span className="stat-value">{stats.gamesCompleted}</span>
-                </div>
-                <div className="stat-item">
-                  <span className="stat-label">Days Used:</span>
-                  <span className="stat-value">{stats.daysUsed}</span>
-                </div>
-                {(stats && stats.extensions && stats.extensions.length > 0) && (
-                  <div className="stat-item">
-                    <span className="stat-label">Extensions Used:</span>
-                    <span className="stat-value">{stats.extensions.length}</span>
-                  </div>
-                )}
+        <div className="trial-content">
+          {type === 'info' && (
+            <>
+              <div className="trial-icon">🎯</div>
+              <div className="trial-message-box">
+                <p className="main-message">
+                  You have <span className="highlight-number">{stats.remainingDeals} deals</span> to evaluate the application.
+                </p>
               </div>
-            </div>
+              
+              <div className="usage-section">
+                <h3 className="usage-title">📊 Your Usage</h3>
+                <div className="stats-grid">
+                  <div className="stat-card">
+                    <div className="stat-number">{stats.dealsPlayed}/{stats.maxDeals}</div>
+                    <div className="stat-label">Deals Played</div>
+                  </div>
+                  <div className="stat-card">
+                    <div className="stat-number">{stats.remainingDeals}</div>
+                    <div className="stat-label">Remaining</div>
+                  </div>
+                  <div className="stat-card">
+                    <div className="stat-number">{stats.gamesCompleted}</div>
+                    <div className="stat-label">Games Completed</div>
+                  </div>
+                  <div className="stat-card">
+                    <div className="stat-number">{stats.daysUsed}</div>
+                    <div className="stat-label">Days Used</div>
+                  </div>
+                </div>
+              </div>
+
+              <button className="start-evaluating-btn" onClick={onClose}>
+                Continue Evaluating
+              </button>
+
+              <div className="get-more-deals-section">
+                <div className="section-divider"></div>
+                <p className="done-text">Done evaluating?</p>
+                <button className="get-more-btn" onClick={() => onExtensionRequest && onExtensionRequest()}>
+                  🎁 Get More Deals
+                </button>
+              </div>
+            </>
           )}
 
-          {/* Action Buttons */}
-          <div className="trial-actions">
-            {(type === 'warning' || type === 'expired') && (
-              <>
-                <button 
-                  className="feedback-btn primary"
-                  onClick={handleSendFeedback}
-                >
-                  📧 Request Extension Code
-                </button>
-
-                <button 
-                  className="extension-btn secondary"
-                  onClick={() => setShowExtensionForm(!showExtensionForm)}
-                >
-                  🔑 Enter 7-Character Extension Code
-                </button>
-              </>
-            )}
-
-            {type === 'info' && (
-              <button className="continue-btn primary" onClick={onClose}>
-                Start Evaluating
-              </button>
-            )}
-
-            {type === 'warning' && (
-              <button className="continue-btn secondary" onClick={onClose}>
-                Continue Playing
-              </button>
-            )}
-          </div>
-
-          {/* Extension Form */}
-          {showExtensionForm && (
-            <div className="extension-form">
-              <h3>🔑 Enter 7-Character Extension Code</h3>
-              <p style={{ fontSize: '0.9rem', color: '#666', marginBottom: '15px' }}>
-                Enter the 7-character code you received from Mike Smith.
-              </p>
+          {type === 'extension' && (
+            <>
+              <div className="trial-icon">🎁</div>
+              <div className="personalized-message">
+                <p className="thank-you-message">
+                  Thank you for playing Bonus Bridge! You have already played <span className="highlight-number">{stats.dealsPlayed} deals</span> and have <span className="highlight-number">{stats.remainingDeals} deals</span> left.
+                </p>
+                <p className="purchase-message">
+                  To buy more deals, click on the request extension code button below to send an email:
+                </p>
+              </div>
               
-              <form onSubmit={handleExtensionSubmit}>
-                <div className="form-group">
-                  <label>Extension Code:</label>
-                  <div style={{ 
-                    display: 'flex', 
-                    gap: '8px', 
-                    justifyContent: 'center',
-                    marginTop: '10px'
-                  }}>
-                    {extensionCode.map((digit, index) => (
+              <div className="extension-info-box">
+                <div className="pricing-section">
+                  <h4>Available Packages:</h4>
+                  <div className="pricing-list">
+                    <div className="pricing-item">
+                      <span>100 deals</span>
+                      <span>$18 / £14 / €16 / $28 AUD</span>
+                    </div>
+                    <div className="pricing-item">
+                      <span>200 deals</span>
+                      <span>$34 / £26 / €30 / $53 AUD</span>
+                    </div>
+                    <div className="pricing-item">
+                      <span>300 deals</span>
+                      <span>$48 / £36 / €43 / $75 AUD</span>
+                    </div>
+                    <div className="pricing-item">
+                      <span>...up to 900 deals</span>
+                      <span>$99 / £74 / €88 / $154 AUD</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {!showExtensionInput && (
+                <div className="extension-buttons">
+                  <button 
+                    className="enter-code-btn" 
+                    onClick={() => setShowExtensionInput(true)}
+                  >
+                    Enter Extension Code
+                  </button>
+                  
+                  <button 
+                    className="request-code-btn"
+                    onClick={() => {
+                      const emailData = trialManager.generateFeedbackEmail();
+                      if (emailData) {
+                        window.open(`mailto:mike@bonusbridge.com?subject=${emailData.subject}&body=${emailData.body}`, '_blank');
+                      }
+                    }}
+                  >
+                    📧 Request Extension Code
+                  </button>
+                  
+                  <button 
+                    className="back-btn" 
+                    onClick={() => onExtensionRequest && onExtensionRequest('info')}
+                  >
+                    Back to Evaluation
+                  </button>
+                </div>
+              )}
+
+              {showExtensionInput && (
+                <div className="extension-input-section">
+                  <h3>Enter 7-Digit Extension Code</h3>
+                  <p className="input-format">Enter the code you received from Mike Smith (e.g., ABC123X4)</p>
+                  
+                  <div className="code-input-grid">
+                    {codeDigits.map((digit, index) => (
                       <input
                         key={index}
                         id={`digit-${index}`}
                         type="text"
                         value={digit}
-                        onChange={(e) => handleDigitChange(index, e)}
-                        onKeyDown={(e) => handleDigitKeyDown(index, e)}
-                        onFocus={(e) => e.target.select()}
-                        onPaste={(e) => {
-                          e.preventDefault();
-                          const pastedData = e.clipboardData.getData('text').replace(/\D/g, '');
-                          if (pastedData.length === 7) {
-                            setExtensionCode(pastedData.split(''));
-                          }
-                        }}
+                        onChange={(e) => handleDigitChange(index, e.target.value)}
+                        onKeyDown={(e) => handleKeyDown(index, e)}
+                        className="digit-input"
                         maxLength="1"
-                        autoComplete="off"
-                        style={{
-                          width: '40px',
-                          height: '40px',
-                          textAlign: 'center',
-                          fontSize: '1.5rem',
-                          fontWeight: 'bold',
-                          border: `2px solid ${digit ? '#1e5c8b' : '#ddd'}`,
-                          borderRadius: '8px',
-                          fontFamily: 'monospace',
-                          backgroundColor: digit ? '#f0f8ff' : 'white',
-                          outline: 'none'
-                        }}
+                        placeholder=""
+                        autoFocus={index === 0}
                       />
                     ))}
                   </div>
-                  {codeError && (
-                    <div style={{ color: '#f44336', fontSize: '0.9rem', marginTop: '10px', textAlign: 'center' }}>
-                      {codeError}
+                  
+                  {extensionResult && (
+                    <div className={`extension-result ${extensionResult.success ? 'success' : 'error'}`}>
+                      <p>{extensionResult.message}</p>
+                      {extensionResult.success && !extensionResult.isTestMode && (
+                        <div className="success-details">
+                          <p><strong>Deals Added:</strong> {extensionResult.dealsAdded}</p>
+                          <p><strong>Total Deals:</strong> {extensionResult.totalDeals}</p>
+                          <p><strong>Remaining:</strong> {extensionResult.remainingDeals}</p>
+                        </div>
+                      )}
+                      
+                      {extensionResult.success && extensionResult.isTestMode && (
+                        <div className="test-mode-success">
+                          <h3>🧪 Developer Test Mode Activated!</h3>
+                          <div className="developer-tools">
+                            <h4>🔧 Developer Tools Available:</h4>
+                            <ul>
+                              <li>✅ All localStorage data cleared</li>
+                              <li>✅ Trial reset to fresh state</li>
+                              <li>✅ {stats.maxDeals} deals now available</li>
+                              <li>✅ Clean testing environment ready</li>
+                            </ul>
+                            
+                            <div className="test-scenarios">
+                              <h4>🎯 Test Scenarios:</h4>
+                              <div className="scenario-buttons">
+                                <button 
+                                  className="scenario-btn new-user"
+                                  onClick={() => {
+                                    localStorage.clear();
+                                    setTimeout(() => {
+                                      window.location.reload();
+                                    }, 100);
+                                  }}
+                                >
+                                  👤 Test New User Flow
+                                </button>
+                                
+                                <button 
+                                  className="scenario-btn near-limit"
+                                  onClick={() => {
+                                    try {
+                                      const data = trialManager.getTrialData();
+                                      if (data) {
+                                        data.dealsPlayed = 49;
+                                        data.isExpired = false;
+                                        trialManager.saveTrialData(data);
+                                      }
+                                      
+                                      setTimeout(() => {
+                                        window.location.reload();
+                                      }, 100);
+                                    } catch (error) {
+                                      console.error('Error setting near limit:', error);
+                                    }
+                                  }}
+                                >
+                                  ⚠️ Test Near Limit (49/50)
+                                </button>
+                                
+                                <button 
+                                  className="scenario-btn expired"
+                                  onClick={() => {
+                                    try {
+                                      const data = trialManager.getTrialData();
+                                      if (data) {
+                                        data.dealsPlayed = 50;
+                                        data.isExpired = true;
+                                        trialManager.saveTrialData(data);
+                                      }
+                                      
+                                      setTimeout(() => {
+                                        window.location.reload();
+                                      }, 100);
+                                    } catch (error) {
+                                      console.error('Error setting expired:', error);
+                                    }
+                                  }}
+                                >
+                                  🚫 Test Expired State
+                                </button>
+                                
+                                <button 
+                                  className="scenario-btn warning"
+                                  onClick={() => {
+                                    try {
+                                      const data = trialManager.getTrialData();
+                                      if (data) {
+                                        data.dealsPlayed = 30;
+                                        data.isExpired = false;
+                                        trialManager.saveTrialData(data);
+                                      }
+                                      
+                                      setTimeout(() => {
+                                        window.location.reload();
+                                      }, 100);
+                                    } catch (error) {
+                                      console.error('Error setting warning:', error);
+                                    }
+                                  }}
+                                >
+                                  ⚠️ Test Warning State (30/50)
+                                </button>
+                              </div>
+                            </div>
+                            
+                            <div className="test-mode-actions">
+                              <button 
+                                className="continue-testing-btn"
+                                onClick={handleTestModeClose}
+                              >
+                                Continue Testing (Current State)
+                              </button>
+                              
+                              <button 
+                                className="generate-codes-btn"
+                                onClick={() => {
+                                  const testCodes = trialManager.generateTestCodes();
+                                  console.log('Generated test codes:', testCodes);
+                                  alert('Test codes generated - check console for details');
+                                }}
+                              >
+                                Generate More Test Codes
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  
+                  {!extensionResult?.isTestMode && (
+                    <div className="code-input-actions">
+                      <button 
+                        className={`apply-code-btn ${isCodeComplete ? 'active' : 'disabled'}`}
+                        onClick={handleExtensionSubmit}
+                        disabled={!isCodeComplete}
+                      >
+                        Apply Extension Code
+                      </button>
+                      <button 
+                        className="cancel-btn" 
+                        onClick={() => {
+                          setShowExtensionInput(false);
+                          setCodeDigits(['', '', '', '', '', '', '']);
+                          setExtensionResult(null);
+                        }}
+                      >
+                        Cancel
+                      </button>
                     </div>
                   )}
                 </div>
-                
-                <div className="form-actions">
-                  <button 
-                    type="button" 
-                    className="cancel-btn"
-                    onClick={() => {
-                      setShowExtensionForm(false);
-                      setExtensionCode(['', '', '', '', '', '', '']);
-                      setCodeError('');
-                    }}
-                  >
-                    Cancel
-                  </button>
-                  <button 
-                    type="submit" 
-                    className="submit-btn"
-                    disabled={isSubmitting || !!validateCode(extensionCode)}
-                  >
-                    {isSubmitting ? 'Validating...' : 'Apply Code'}
-                  </button>
-                </div>
-              </form>
-              
-              {/* Code format help */}
-              <div style={{ 
-                marginTop: '15px', 
-                padding: '10px', 
-                backgroundColor: '#f0f8ff', 
-                borderRadius: '6px',
-                fontSize: '0.85rem',
-                color: '#1e5c8b'
-              }}>
-                <strong>How it works:</strong><br/>
-                • Your 7-character code grants additional deals<br/>
-                • First 6 characters are letters A-Z or digits 0-9<br/>
-                • Last character is a digit 1-9<br/>
-                • Each code can only be used once
+              )}
+            </>
+          )}
+
+          {type === 'warning' && (
+            <>
+              <div className="trial-icon">⚠️</div>
+              <div className="warning-message-box">
+                <p className="trial-message">
+                  You have {stats.remainingDeals} deals remaining in your evaluation period.
+                </p>
               </div>
-            </div>
-          )}
-
-          {/* Extension History (if any) */}
-          {stats && stats.extensions && stats.extensions.length > 0 && (
-            <div style={{ 
-              marginTop: '15px', 
-              padding: '10px', 
-              backgroundColor: '#f8f9fa', 
-              borderRadius: '6px',
-              fontSize: '0.85rem'
-            }}>
-              <strong>Previous Extensions:</strong>
-              {stats.extensions.map((ext, index) => (
-                <div key={index} style={{ marginTop: '5px' }}>
-                  • {ext.dealsGranted} deals added on {new Date(ext.appliedDate).toLocaleDateString()}
+              
+              <div className="usage-section">
+                <h3 className="usage-title">📊 Your Usage</h3>
+                <div className="stats-compact">
+                  <div className="stat-row">
+                    <span>Deals Played:</span>
+                    <span>{stats.dealsPlayed}/{stats.maxDeals}</span>
+                  </div>
+                  <div className="stat-row">
+                    <span>Remaining:</span>
+                    <span>{stats.remainingDeals}</span>
+                  </div>
+                  <div className="stat-row">
+                    <span>Games Completed:</span>
+                    <span>{stats.gamesCompleted}</span>
+                  </div>
+                  <div className="stat-row">
+                    <span>Days Used:</span>
+                    <span>{stats.daysUsed}</span>
+                  </div>
                 </div>
-              ))}
-            </div>
+              </div>
+
+              <div className="warning-actions">
+                <button 
+                  className="request-code-btn"
+                  onClick={() => {
+                    const emailData = trialManager.generateFeedbackEmail();
+                    if (emailData) {
+                      window.open(`mailto:mike@bonusbridge.com?subject=${emailData.subject}&body=${emailData.body}`, '_blank');
+                    }
+                  }}
+                >
+                  📧 Request Extension Code
+                </button>
+                
+                <button 
+                  className="enter-code-btn" 
+                  onClick={() => onExtensionRequest && onExtensionRequest()}
+                >
+                  ✏️ Enter 7-Digit Extension Code
+                </button>
+                
+                <button className="continue-btn" onClick={onClose}>
+                  Continue Playing
+                </button>
+              </div>
+            </>
           )}
 
-          {/* Expired Message */}
           {type === 'expired' && (
-            <div className="expired-note">
-              <p><strong>Note:</strong> You can still view previous games, but cannot start new deals without an extension code.</p>
-            </div>
+            <>
+              <div className="trial-icon">🚫</div>
+              <div className="expired-message-box">
+                <p className="trial-message">
+                  Your evaluation period has ended after {stats.dealsPlayed} deals.
+                  Thank you for testing Bonus Bridge!
+                </p>
+              </div>
+              
+              <div className="usage-section">
+                <h3 className="usage-title">📊 Your Usage</h3>
+                <div className="stats-compact">
+                  <div className="stat-row">
+                    <span>Deals Played:</span>
+                    <span>{stats.dealsPlayed}/{stats.maxDeals}</span>
+                  </div>
+                  <div className="stat-row">
+                    <span>Remaining:</span>
+                    <span>{stats.remainingDeals}</span>
+                  </div>
+                  <div className="stat-row">
+                    <span>Games Completed:</span>
+                    <span>{stats.gamesCompleted}</span>
+                  </div>
+                  <div className="stat-row">
+                    <span>Days Used:</span>
+                    <span>{stats.daysUsed}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="expired-actions">
+                <button 
+                  className="request-code-btn"
+                  onClick={() => {
+                    const emailData = trialManager.generateFeedbackEmail();
+                    if (emailData) {
+                      window.open(`mailto:mike@bonusbridge.com?subject=${emailData.subject}&body=${emailData.body}`, '_blank');
+                    }
+                  }}
+                >
+                  📧 Request Extension Code
+                </button>
+                
+                <button 
+                  className="enter-code-btn" 
+                  onClick={() => setShowExtensionInput(true)}
+                >
+                  ✏️ Enter 7-Digit Extension Code
+                </button>
+              </div>
+
+              <div className="expired-note">
+                <p>Note: You can still view previous games, but cannot start new deals without an extension code.</p>
+              </div>
+
+              {showExtensionInput && (
+                <div className="extension-input-section">
+                  <h3>Enter 7-Digit Extension Code</h3>
+                  <p className="input-format">Enter the 7-digit code you received from Mike Smith.</p>
+                  
+                  <div className="code-input-grid">
+                    {codeDigits.map((digit, index) => (
+                      <input
+                        key={index}
+                        id={`digit-${index}`}
+                        type="text"
+                        value={digit}
+                        onChange={(e) => handleDigitChange(index, e.target.value)}
+                        onKeyDown={(e) => handleKeyDown(index, e)}
+                        className="digit-input"
+                        maxLength="1"
+                        placeholder=""
+                        autoFocus={index === 0}
+                      />
+                    ))}
+                  </div>
+                  
+                  {extensionResult && (
+                    <div className={`extension-result ${extensionResult.success ? 'success' : 'error'}`}>
+                      <p>{extensionResult.message}</p>
+                      {extensionResult.success && !extensionResult.isTestMode && (
+                        <div className="success-details">
+                          <p><strong>Deals Added:</strong> {extensionResult.dealsAdded}</p>
+                          <p><strong>Remaining:</strong> {extensionResult.remainingDeals}</p>
+                        </div>
+                      )}
+                      
+                      {extensionResult.success && extensionResult.isTestMode && (
+                        <div className="test-mode-success">
+                          <h3>🧪 Developer Test Mode Activated!</h3>
+                          <p>All data cleared and trial reset to fresh state.</p>
+                          <button 
+                            className="continue-testing-btn"
+                            onClick={handleTestModeClose}
+                          >
+                            Continue Testing
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  
+                  {!extensionResult?.isTestMode && (
+                    <div className="code-input-actions">
+                      <button 
+                        className={`apply-code-btn ${isCodeComplete ? 'active' : 'disabled'}`}
+                        onClick={handleExtensionSubmit}
+                        disabled={!isCodeComplete}
+                      >
+                        Apply Code
+                      </button>
+                      <button 
+                        className="cancel-btn" 
+                        onClick={() => {
+                          setShowExtensionInput(false);
+                          setCodeDigits(['', '', '', '', '', '', '']);
+                          setExtensionResult(null);
+                        }}
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  )}
+
+                  <div className="how-it-works">
+                    <h4>How it works:</h4>
+                    <ul>
+                      <li>Your 7-digit code grants additional deals</li>
+                      <li>Each code can only be used once</li>
+                    </ul>
+                  </div>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>
@@ -387,4 +597,4 @@ const TrialPopup = ({
   );
 };
 
-export { TrialPopup as default };
+export default TrialPopup;

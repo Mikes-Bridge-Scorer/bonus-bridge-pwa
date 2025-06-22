@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import WelcomePage from './components/WelcomePage';
-import TrialManager from './utils/TrialManager'; // NEW: Trial system import
-import TrialPopup from './components/TrialPopup'; // NEW: Trial popup import
+import TrialManager from './utils/TrialManager';
+import TrialPopup from './components/TrialPopup';
 import BridgeGameUI from './BridgeGameUI';
 import ScoreAdjustment from './components/ScoreAdjustment';
 import FinalScoreAnalysis from './components/FinalScoreAnalysis';
@@ -15,36 +15,25 @@ import {
 import './global.css';
 
 const App = () => {
-  // Welcome page state
   const [showWelcome, setShowWelcome] = useState(true);
-  
-  // NEW: Trial management state
   const [trialManager] = useState(new TrialManager());
   const [showTrialPopup, setShowTrialPopup] = useState(false);
-  const [trialType, setTrialType] = useState('info'); // 'info', 'warning', 'expired'
-  
-  // State to track current view (main game, score adjustment, or final analysis)
+  const [trialType, setTrialType] = useState('info');
   const [currentView, setCurrentView] = useState('game');
   
-  // Game state with updated scores structure
   const [gameState, setGameState] = useState({
     gameNumber: 1,
     dealNumber: 1,
     deals: [],
     scores: {
-      // Standard bridge (Party Bridge) scores
       nsPoints: 0,
       ewPoints: 0,
       nsTotal: 0,
       ewTotal: 0,
-      
-      // Bonus Bridge scores - separate tracking
       bonusNsPoints: 0,
       bonusEwPoints: 0,
       bonusNsTotal: 0,
       bonusEwTotal: 0,
-      
-      // Track which deal number we're on
       currentDealNumber: 1
     },
     currentDeal: {
@@ -53,17 +42,12 @@ const App = () => {
       contract: '',
       result: null,
       tricks: null,
-      
-      // Standard bridge scores
       nsPoints: 0,
       ewPoints: 0,
       rawScore: 0,
-      
-      // Bonus bridge scores
       bonusNsPoints: 0,
       bonusEwPoints: 0,
       bonusRawScore: 0,
-      
       bonusScoringEnabled: true,
       handAnalysis: null
     },
@@ -72,77 +56,54 @@ const App = () => {
     gameEnded: false
   });
 
-  // NEW: Check trial status when app loads
-  useEffect(() => {
-    // Check for expiry first
-    if (trialManager.isExpired()) {
-      setTrialType('expired');
-      setShowTrialPopup(true);
-      return;
-    }
-    
-    // Check for warnings
-    if (trialManager.shouldShowWarning()) {
-      setTrialType('warning');
-      setShowTrialPopup(true);
-      return;
-    }
-    
-    // Show welcome popup on first visit (optional)
-    const isFirstVisit = !sessionStorage.getItem('trial_seen');
-    if (isFirstVisit && !showWelcome) {
-      setTrialType('info');
-      setShowTrialPopup(true);
-      sessionStorage.setItem('trial_seen', 'true');
-    }
-  }, [trialManager, showWelcome]);
-
-  // Function to start the game from welcome page
   const handleStartGame = () => {
     setShowWelcome(false);
     
-    // Show trial info after welcome if first visit
-    const isFirstVisit = !sessionStorage.getItem('trial_seen');
-    if (isFirstVisit) {
-      setTimeout(() => {
-        setTrialType('info');
-        setShowTrialPopup(true);
-        sessionStorage.setItem('trial_seen', 'true');
-      }, 500);
+    const remainingDeals = trialManager.getRemainingDeals();
+    const stats = trialManager.getStats();
+    const totalDeals = stats?.maxDeals || 50;
+    const dealsPlayed = stats?.dealsPlayed || 0;
+    
+    if (trialManager.isExpired()) {
+      setTrialType('expired');
+      setShowTrialPopup(true);
+    } else if (dealsPlayed === 0 && totalDeals <= 50) {
+      setTrialType('info');
+      setShowTrialPopup(true);
+    } else if (remainingDeals <= 10 && remainingDeals > 0) {
+      setTrialType('warning');
+      setShowTrialPopup(true);
+    } else if (trialManager.shouldShowWarning()) {
+      setTrialType('warning');
+      setShowTrialPopup(true);
     }
   };
 
-  // NEW: Handle trial popup close
   const handleTrialPopupClose = () => {
-    // Can't close expired popup without extension
     if (trialType !== 'expired') {
       setShowTrialPopup(false);
     }
   };
 
-  // NEW: Handle trial extension
   const handleTrialExtended = () => {
     setShowTrialPopup(false);
-    // Refresh trial status
-    if (trialManager.shouldShowWarning()) {
-      setTrialType('warning');
-    } else {
+  };
+
+  const handleExtensionRequest = (returnType = null) => {
+    if (returnType === 'info') {
       setTrialType('info');
+    } else {
+      setTrialType('extension');
     }
   };
   
-  // Function to handle score calculation from ScoreProcessor
   const handleScoreCalculated = (scoreResult) => {
     const { nsPoints, ewPoints, rawScore } = scoreResult;
     
-    console.log('App received score calculation:', scoreResult);
-    
-    // Update the current deal with the calculated scores
     setGameState(prevState => {
-      // Check if scores have changed
       if (prevState.currentDeal.nsPoints === nsPoints && 
           prevState.currentDeal.ewPoints === ewPoints) {
-        return prevState; // No change needed
+        return prevState;
       }
       
       const updatedCurrentDeal = {
@@ -152,12 +113,9 @@ const App = () => {
         rawScore: rawScore || Math.max(Math.abs(nsPoints), Math.abs(ewPoints))
       };
       
-      // Calculate which team gets the raw score based on which has positive points
       const nsScores = nsPoints > 0;
       const ewScores = ewPoints > 0;
       
-      // Calculate running totals for Party Bridge (standard) scoring
-      // Only add raw score to the running total of the team that scored
       const calculatedNsTotal = nsScores ? 
         (prevState.scores.nsTotal || 0) + rawScore : 
         (prevState.scores.nsTotal || 0);
@@ -166,18 +124,6 @@ const App = () => {
         (prevState.scores.ewTotal || 0) + rawScore : 
         (prevState.scores.ewTotal || 0);
       
-      // Log the calculation details
-      console.log('Party Bridge (standard) score calculation:', {
-        previousNsTotal: prevState.scores.nsTotal || 0,
-        previousEwTotal: prevState.scores.ewTotal || 0,
-        nsScores,
-        ewScores,
-        rawScore,
-        newNsTotal: calculatedNsTotal,
-        newEwTotal: calculatedEwTotal
-      });
-      
-      // Updated scores with correct running totals
       const updatedScores = {
         ...prevState.scores,
         nsPoints,
@@ -187,11 +133,6 @@ const App = () => {
         currentDealNumber: prevState.dealNumber
       };
       
-      console.log('Updating score state:', {
-        currentDeal: updatedCurrentDeal,
-        scores: updatedScores
-      });
-      
       return {
         ...prevState,
         currentDeal: updatedCurrentDeal,
@@ -200,7 +141,6 @@ const App = () => {
     });
   };
   
-  // Function to update current deal
   const updateCurrentDeal = useCallback((dealUpdates) => {
     setGameState(prevState => ({
       ...prevState,
@@ -211,7 +151,6 @@ const App = () => {
     }));
   }, []);
   
-  // Function to handle adjustment input
   const handleSaveAdjustment = (adjustmentData) => {
     setGameState(prevState => ({
       ...prevState,
@@ -225,32 +164,25 @@ const App = () => {
     setCurrentView('analysis');
   };
   
-  // Function to handle score analysis saving - UPDATED with trial check
   const handleSaveAnalysis = (scoreResult) => {
-    // NEW: Check trial limit before proceeding
     if (!trialManager.canPlayDeals()) {
       setTrialType('expired');
       setShowTrialPopup(true);
-      return; // Block progression
+      return;
     }
 
-    console.log('Handling save analysis with result:', scoreResult);
-    
-    // Extract the complete deal with bonus scores
     const currentDealWithBonusScores = scoreResult.currentDealWithBonusScores || {
       ...gameState.currentDeal,
       dealNumber: gameState.dealNumber,
-      bonusNsPoints: scoreResult.nsPoints || 0,  // Store as bonus scores
-      bonusEwPoints: scoreResult.ewPoints || 0   // Store as bonus scores
+      bonusNsPoints: scoreResult.nsPoints || 0,
+      bonusEwPoints: scoreResult.ewPoints || 0
     };
     
-    // Calculate raw score for bonus scoring if not provided
     const bonusRawScore = Math.max(
       Math.abs(scoreResult.nsPoints || 0),
       Math.abs(scoreResult.ewPoints || 0)
     );
     
-    // Calculate running totals for bonus scoring
     const nsScores = scoreResult.nsPoints > 0;
     const ewScores = scoreResult.ewPoints > 0;
     
@@ -262,31 +194,18 @@ const App = () => {
       (gameState.scores.bonusEwTotal || 0) + bonusRawScore : 
       (gameState.scores.bonusEwTotal || 0);
     
-    console.log('Bonus Bridge score calculation:', {
-      nsScores,
-      ewScores,
-      bonusRawScore,
-      previousBonusNsTotal: gameState.scores.bonusNsTotal || 0,
-      previousBonusEwTotal: gameState.scores.bonusEwTotal || 0,
-      newBonusNsTotal: bonusNsTotal,
-      newBonusEwTotal: bonusEwTotal
-    });
-    
-    // Store the complete deal with both raw and bonus scores
     const completeCurrentDeal = {
       ...currentDealWithBonusScores,
-      rawScore: currentDealWithBonusScores.rawScore || 0,  // Party Bridge score
-      bonusRawScore: bonusRawScore,                        // Bonus Bridge score
-      nsPoints: currentDealWithBonusScores.nsPoints || 0,  // Party Bridge points
-      ewPoints: currentDealWithBonusScores.ewPoints || 0,  // Party Bridge points
-      bonusNsPoints: scoreResult.nsPoints || 0,            // Bonus Bridge points
-      bonusEwPoints: scoreResult.ewPoints || 0             // Bonus Bridge points
+      rawScore: currentDealWithBonusScores.rawScore || 0,
+      bonusRawScore: bonusRawScore,
+      nsPoints: currentDealWithBonusScores.nsPoints || 0,
+      ewPoints: currentDealWithBonusScores.ewPoints || 0,
+      bonusNsPoints: scoreResult.nsPoints || 0,
+      bonusEwPoints: scoreResult.ewPoints || 0
     };
 
-    // NEW: Increment deal counter
     const canContinue = trialManager.incrementDeals();
     
-    // Update game state with new deal
     setGameState(prevState => {
       return {
         ...prevState,
@@ -294,10 +213,8 @@ const App = () => {
         deals: [...prevState.deals, completeCurrentDeal],
         scores: {
           ...prevState.scores,
-          // Reset current deal scores to 0
           nsPoints: 0,
           ewPoints: 0,
-          // Preserve running totals for both scoring systems
           nsTotal: prevState.scores.nsTotal || 0,
           ewTotal: prevState.scores.ewTotal || 0,
           bonusNsTotal: bonusNsTotal,
@@ -323,7 +240,6 @@ const App = () => {
       };
     });
 
-    // NEW: Check trial status after increment
     if (!canContinue) {
       setTrialType('expired');
       setShowTrialPopup(true);
@@ -332,26 +248,20 @@ const App = () => {
       setShowTrialPopup(true);
     }
     
-    // Return to the game view
     setCurrentView('game');
   };
   
-  // Function to handle next deal without adjustments - UPDATED with trial check
   const handleNextDeal = (currentDealWithScores = null, updatedScores = null) => {
-    // NEW: Check trial limit before proceeding
     if (!trialManager.canPlayDeals()) {
       setTrialType('expired');
       setShowTrialPopup(true);
-      return; // Block progression
+      return;
     }
 
-    // Use provided scores or current state
     const dealToSave = currentDealWithScores || gameState.currentDeal;
     const scoresToUse = updatedScores || gameState.scores;
     
-    // Ensure the deal has scores
     if (!dealToSave.nsPoints && !dealToSave.ewPoints && dealToSave.contract) {
-      // Calculate if needed
       const contractDetails = parseContract(
         dealToSave.contract, 
         dealToSave.result, 
@@ -361,22 +271,18 @@ const App = () => {
       if (contractDetails) {
         const standardScore = calculateBridgeScore(contractDetails);
         
-        // Calculate raw score
         const rawScore = Math.max(
           Math.abs(standardScore.nsPoints || 0), 
           Math.abs(standardScore.ewPoints || 0)
         );
         
-        // Update scores
         dealToSave.nsPoints = standardScore.nsPoints || 0;
         dealToSave.ewPoints = standardScore.ewPoints || 0;
         dealToSave.rawScore = rawScore;
         
-        // Determine which team scores positive points
         const nsScores = standardScore.nsPoints > 0;
         const ewScores = standardScore.ewPoints > 0;
         
-        // Calculate running totals for Party Bridge
         const calculatedNsTotal = nsScores ? 
           (scoresToUse.nsTotal || 0) + rawScore : 
           (scoresToUse.nsTotal || 0);
@@ -384,21 +290,9 @@ const App = () => {
         const calculatedEwTotal = ewScores ? 
           (scoresToUse.ewTotal || 0) + rawScore : 
           (scoresToUse.ewTotal || 0);
-        
-        console.log('Next deal Party Bridge score calculation:', {
-          nsScores, 
-          ewScores, 
-          rawScore, 
-          previousNsTotal: scoresToUse.nsTotal || 0,
-          previousEwTotal: scoresToUse.ewTotal || 0,
-          newNsTotal: calculatedNsTotal,
-          newEwTotal: calculatedEwTotal
-        });
 
-        // NEW: Increment deal counter
         const canContinue = trialManager.incrementDeals();
         
-        // Update game state with new deal
         setGameState(prevState => {
           return {
             ...prevState,
@@ -406,11 +300,10 @@ const App = () => {
             deals: [...prevState.deals, dealToSave],
             scores: {
               ...prevState.scores,
-              nsPoints: 0, // Reset to 0 for the new deal
-              ewPoints: 0, // Reset to 0 for the new deal
+              nsPoints: 0,
+              ewPoints: 0,
               nsTotal: calculatedNsTotal,
               ewTotal: calculatedEwTotal,
-              // Keep bonus scores unchanged
               bonusNsTotal: prevState.scores.bonusNsTotal || 0,
               bonusEwTotal: prevState.scores.bonusEwTotal || 0,
               currentDealNumber: prevState.dealNumber + 1
@@ -434,7 +327,6 @@ const App = () => {
           };
         });
 
-        // NEW: Check trial status after increment
         if (!canContinue) {
           setTrialType('expired');
           setShowTrialPopup(true);
@@ -444,7 +336,6 @@ const App = () => {
         }
       }
     } else {
-      // Already has scores, just save and proceed
       const rawScore = dealToSave.rawScore || Math.max(
         Math.abs(dealToSave.nsPoints || 0), 
         Math.abs(dealToSave.ewPoints || 0)
@@ -460,21 +351,9 @@ const App = () => {
       const calculatedEwTotal = ewScores ? 
         (scoresToUse.ewTotal || 0) + rawScore : 
         (scoresToUse.ewTotal || 0);
-      
-      console.log('Next deal with existing scores:', {
-        nsScores, 
-        ewScores, 
-        rawScore, 
-        previousNsTotal: scoresToUse.nsTotal || 0,
-        previousEwTotal: scoresToUse.ewTotal || 0,
-        newNsTotal: calculatedNsTotal,
-        newEwTotal: calculatedEwTotal
-      });
 
-      // NEW: Increment deal counter
       const canContinue = trialManager.incrementDeals();
       
-      // Update game state with new deal
       setGameState(prevState => {
         return {
           ...prevState,
@@ -482,11 +361,10 @@ const App = () => {
           deals: [...prevState.deals, dealToSave],
           scores: {
             ...prevState.scores,
-            nsPoints: 0, // Reset to 0 for the new deal
-            ewPoints: 0, // Reset to 0 for the new deal
+            nsPoints: 0,
+            ewPoints: 0,
             nsTotal: calculatedNsTotal,
             ewTotal: calculatedEwTotal,
-            // Keep bonus scores unchanged
             bonusNsTotal: prevState.scores.bonusNsTotal || 0,
             bonusEwTotal: prevState.scores.bonusEwTotal || 0,
             currentDealNumber: prevState.dealNumber + 1
@@ -510,7 +388,6 @@ const App = () => {
         };
       });
 
-      // NEW: Check trial status after increment
       if (!canContinue) {
         setTrialType('expired');
         setShowTrialPopup(true);
@@ -521,17 +398,13 @@ const App = () => {
     }
   };
   
-  // Function to start a new game
   const handleNewGame = () => {
-    // Check if we're ending the current game or starting fresh
     if (gameState.deals.length > 0) {
-      // Mark game as ended to show summary
       setGameState(prevState => ({
         ...prevState,
         gameEnded: true
       }));
     } else {
-      // Reset the game state for a fresh start
       setGameState({
         gameNumber: gameState.gameNumber + 1,
         dealNumber: 1,
@@ -569,9 +442,7 @@ const App = () => {
     }
   };
   
-  // Function to return to the game after viewing summary
   const handleReturnToGame = () => {
-    // Reset the game state for a fresh start
     setGameState({
       gameNumber: gameState.gameNumber + 1,
       dealNumber: 1,
@@ -608,14 +479,11 @@ const App = () => {
     });
   };
   
-  // Function to handle choosing Bonus Bridge scoring
   const handleChooseBonusBridge = () => {
     setCurrentView('adjustment');
   };
   
-  // Function to handle choosing Party Bridge scoring (standard)
   const handleChoosePartyBridge = () => {
-    // Calculate standard bridge score
     const contractDetails = parseContract(
       gameState.currentDeal.contract, 
       gameState.currentDeal.result, 
@@ -625,13 +493,11 @@ const App = () => {
     if (contractDetails) {
       const standardScore = calculateBridgeScore(contractDetails);
       
-      // Calculate raw score
       const rawScore = Math.max(
         Math.abs(standardScore.nsPoints || 0), 
         Math.abs(standardScore.ewPoints || 0)
       );
       
-      // Update current deal with standard scores
       const currentDealWithScores = {
         ...gameState.currentDeal,
         nsPoints: standardScore.nsPoints || 0,
@@ -640,7 +506,6 @@ const App = () => {
         bonusScoringEnabled: false
       };
       
-      // Calculate running totals using raw scores
       const nsScores = standardScore.nsPoints > 0;
       const ewScores = standardScore.ewPoints > 0;
       
@@ -652,97 +517,59 @@ const App = () => {
         (gameState.scores.ewTotal || 0) + rawScore : 
         (gameState.scores.ewTotal || 0);
       
-      // For immediate feedback of the current score
       const updatedScores = {
         ...gameState.scores,
         nsPoints: standardScore.nsPoints || 0,
         ewPoints: standardScore.ewPoints || 0,
         nsTotal: nsRawTotal,
         ewTotal: ewRawTotal,
-        
-        // Important: Don't update bonus scores for Party Bridge
         currentDealNumber: gameState.dealNumber
       };
       
-      // Update game state with scores
       setGameState(prevState => {
         return {
           ...prevState,
           currentDeal: currentDealWithScores,
           scores: updatedScores,
-          showScorePopup: false // Make sure popup is closed
+          showScorePopup: false
         };
       });
       
-      // Then proceed to next deal after a short delay to ensure UI updates
       setTimeout(() => {
         handleNextDeal(currentDealWithScores, updatedScores);
       }, 100);
     }
   };
   
-  // Determine which view to show - UPDATED with trial popup
   const renderCurrentView = () => {
-    // Show trial popup if needed (highest priority)
+    if (showWelcome) {
+      return <WelcomePage onStartGame={handleStartGame} />;
+    }
+
     if (showTrialPopup) {
       return (
         <TrialPopup
           trialManager={trialManager}
           onClose={handleTrialPopupClose}
           onExtended={handleTrialExtended}
+          onExtensionRequest={handleExtensionRequest}
           type={trialType}
         />
       );
     }
 
-    // Show welcome page
-    if (showWelcome) {
-      return <WelcomePage onStartGame={handleStartGame} />;
+    if (trialManager.isExpired()) {
+      setTrialType('expired');
+      setShowTrialPopup(true);
+      return null;
     }
 
-    // Block access if trial expired (backup check)
-    if (trialManager.isExpired() && trialType === 'expired') {
-      return (
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          height: '100vh',
-          flexDirection: 'column',
-          textAlign: 'center',
-          padding: '20px',
-          backgroundColor: '#f5f5f5'
-        }}>
-          <h2 style={{ color: '#f44336', marginBottom: '20px' }}>
-            🚫 Trial Period Expired
-          </h2>
-          <p style={{ marginBottom: '20px', color: '#555' }}>
-            Your evaluation period has ended. Please contact Mike Smith for an extension.
-          </p>
-          <button 
-            onClick={() => setShowTrialPopup(true)}
-            style={{
-              padding: '12px 24px',
-              backgroundColor: '#1e5c8b',
-              color: 'white',
-              border: 'none',
-              borderRadius: '8px',
-              fontSize: '16px',
-              cursor: 'pointer'
-            }}
-          >
-            Enter Extension Code
-          </button>
-        </div>
-      );
-    }
-
-    // Regular app flow
     if (gameState.gameEnded) {
       return (
         <GameScoreSheet 
           gameState={gameState}
           onNewGame={handleReturnToGame}
+          trialManager={trialManager}
         />
       );
     }
@@ -783,7 +610,6 @@ const App = () => {
               setGameState={setGameState}
               onChooseBonusBridge={handleChooseBonusBridge}
               onChoosePartyBridge={handleChoosePartyBridge}
-              // NEW: Pass trial info to UI (optional)
               remainingDeals={trialManager.getRemainingDeals()}
               trialManager={trialManager}
             />

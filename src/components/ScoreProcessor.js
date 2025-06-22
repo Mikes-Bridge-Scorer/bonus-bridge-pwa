@@ -11,16 +11,9 @@ import {
  * It processes the current deal and applies the scoring rules
  */
 const ScoreProcessor = ({ currentDeal, onScoreCalculated }) => {
-  // Add debug logging
-  useEffect(() => {
-    console.log('ScoreProcessor received deal:', currentDeal);
-  }, [currentDeal]);
-  
-  // FIXED: Improved dependency array to ensure score recalculation happens reliably
   useEffect(() => {
     // Only process scores if we have a valid contract and result
     if (currentDeal && currentDeal.contract && currentDeal.result !== null && currentDeal.result !== undefined) {
-      console.log('Processing score for deal:', currentDeal);
       processDealScore(currentDeal);
     }
   }, [
@@ -28,7 +21,7 @@ const ScoreProcessor = ({ currentDeal, onScoreCalculated }) => {
     currentDeal?.result, 
     currentDeal?.vulnerable?.ns, 
     currentDeal?.vulnerable?.ew,
-    onScoreCalculated  // FIXED: Added callback to dependencies 
+    onScoreCalculated
   ]);
   
   // Process the current deal and calculate scores
@@ -43,14 +36,12 @@ const ScoreProcessor = ({ currentDeal, onScoreCalculated }) => {
     
     // Calculate standard bridge score
     const standardScore = calculateBridgeScore(contractDetails);
-    console.log('Standard bridge score calculated:', standardScore);
     
     // If we have HCP data, calculate bonus bridge score
     let bonusScore = standardScore;
     
     if (deal.handAnalysis) {
       bonusScore = calculateBonusBridgeScore(contractDetails, deal.handAnalysis);
-      console.log('Bonus bridge score calculated:', bonusScore);
     }
     
     // Determine which score to use based on the scoring mode
@@ -62,9 +53,7 @@ const ScoreProcessor = ({ currentDeal, onScoreCalculated }) => {
       Math.abs(finalScore.ewPoints || 0)
     );
     
-    console.log('Raw score calculated:', rawScore);
-    
-    // FIXED: Ensure we always have defined scores to prevent undefined values
+    // Ensure we always have defined scores to prevent undefined values
     const nsPoints = finalScore.nsPoints || 0;
     const ewPoints = finalScore.ewPoints || 0;
     
@@ -78,18 +67,10 @@ const ScoreProcessor = ({ currentDeal, onScoreCalculated }) => {
       madeContract: contractDetails.madeContract
     };
     
-    console.log('Final score result:', scoreResult);
-    
     // Make sure we're passing zero instead of undefined/null
     if (isNaN(scoreResult.nsPoints)) scoreResult.nsPoints = 0;
     if (isNaN(scoreResult.ewPoints)) scoreResult.ewPoints = 0;
     if (isNaN(scoreResult.rawScore)) scoreResult.rawScore = 0;
-    
-    // FIXED: Added additional debug logging
-    console.log('Score calculation complete for deal:', deal.dealNumber);
-    console.log('NS Points:', scoreResult.nsPoints);
-    console.log('EW Points:', scoreResult.ewPoints);
-    console.log('Raw Score:', scoreResult.rawScore);
     
     // Send the calculated score to the parent component
     onScoreCalculated(scoreResult);

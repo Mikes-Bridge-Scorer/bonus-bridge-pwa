@@ -1,0 +1,289 @@
+/* PartyBridgeExplanation.css - Mobile-Optimized Version */
+
+.party-bridge-explanation {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 1001;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 5px;
+}
+
+.explanation-content {
+  width: 95%;
+  height: 90vh;
+  max-width: 450px;
+  background-color: white;
+  border-radius: 10px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.explanation-header {
+  background-color: #1e5c8b;
+  color: white;
+  padding: 10px 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.explanation-header h2 {
+  font-size: 16px;
+  margin: 0;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 5px;
+  min-width: 30px;
+  min-height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.close-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.explanation-tabs {
+  display: flex;
+  background-color: #f5f5f5;
+  border-bottom: 1px solid #ddd;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  flex-shrink: 0;
+}
+
+.explanation-tabs .tab-btn {
+  padding: 8px 6px;
+  font-size: 12px;
+  min-width: 70px;
+  flex: 1;
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  font-weight: bold;
+  color: #555;
+  cursor: pointer;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.explanation-tabs .tab-btn.active {
+  color: #1e5c8b;
+  border-bottom-color: #1e5c8b;
+  background-color: white;
+}
+
+.explanation-body {
+  flex: 1;
+  padding: 12px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Tab Content Styling */
+.explanation-body h3 {
+  color: #1e5c8b;
+  margin: 12px 0 8px 0;
+  font-size: 16px;
+}
+
+.explanation-body h3:first-child {
+  margin-top: 0;
+}
+
+.explanation-body h4 {
+  color: #2c3e50;
+  margin: 10px 0 6px 0;
+  font-size: 14px;
+}
+
+.explanation-body h5 {
+  color: #34495e;
+  margin: 8px 0 4px 0;
+  font-size: 13px;
+}
+
+.explanation-body p {
+  margin: 0 0 10px 0;
+  line-height: 1.4;
+  font-size: 14px;
+}
+
+.explanation-body ul {
+  margin: 0 0 12px 0;
+  padding-left: 18px;
+}
+
+.explanation-body li {
+  margin-bottom: 4px;
+  line-height: 1.3;
+  font-size: 14px;
+}
+
+/* Tables */
+.scoring-table, .comparison-table {
+  width: 100%;
+  margin: 10px 0;
+  font-size: 12px;
+  border-collapse: collapse;
+}
+
+.scoring-table th, .scoring-table td,
+.comparison-table th, .comparison-table td {
+  padding: 6px 4px;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+
+.scoring-table th, .comparison-table th {
+  background-color: #f2f6f9;
+  font-weight: bold;
+  font-size: 12px;
+}
+
+.comparison-table td {
+  text-align: center;
+}
+
+/* Scenario Examples */
+.scenario-example {
+  background-color: #f9f9f9;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+}
+
+.scenario-comparison {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 10px 0;
+}
+
+.scenario-side {
+  background-color: white;
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+}
+
+.scenario-side h5 {
+  margin: 0 0 5px 0;
+  color: #1e5c8b;
+  font-size: 12px;
+}
+
+.scenario-side p {
+  margin: 3px 0;
+  font-size: 11px;
+  line-height: 1.2;
+}
+
+.scenario-conclusion {
+  background-color: #fff3cd;
+  border: 1px solid #ffeaa7;
+  padding: 8px;
+  border-radius: 5px;
+  margin-top: 10px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: bold;
+  color: #856404;
+}
+
+/* Choice Guidance */
+.choice-guidance {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  margin: 10px 0;
+}
+
+.choice-option {
+  background-color: #f8f9fa;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.choice-option h4 {
+  margin: 0 0 8px 0;
+  color: #1e5c8b;
+  font-size: 13px;
+}
+
+.choice-option ul {
+  margin: 0;
+  padding-left: 15px;
+}
+
+.choice-option li {
+  font-size: 12px;
+  margin-bottom: 3px;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 375px) {
+  .explanation-content {
+    width: 98%;
+    max-width: none;
+  }
+  
+  .explanation-header h2 {
+    font-size: 15px;
+  }
+  
+  .explanation-tabs .tab-btn {
+    padding: 6px 4px;
+    font-size: 11px;
+    min-width: 60px;
+  }
+  
+  .explanation-body {
+    padding: 8px;
+  }
+  
+  .scenario-comparison {
+    grid-template-columns: 1fr;
+  }
+  
+  .scoring-table th, .scoring-table td,
+  .comparison-table th, .comparison-table td {
+    padding: 4px 2px;
+    font-size: 11px;
+  }
+}
+
+/* Landscape mode for phones */
+@media (orientation: landscape) and (max-height: 500px) {
+  .explanation-content {
+    height: 95vh;
+    max-width: 500px;
+  }
+  
+  .explanation-body {
+    padding: 8px;
+  }
+  
+  .explanation-tabs .tab-btn {
+    padding: 6px 8px;
+    font-size: 11px;
+  }
+}
