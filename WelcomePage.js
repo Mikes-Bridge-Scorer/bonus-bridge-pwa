@@ -118,7 +118,7 @@ const WelcomePage = ({ onStartGame }) => {
         {/* Creator Credits - Compact */}
         <div className="credits-section">
          <div className="creator-info">
-  <p className="affiliation">ONE TABLE BRIDGE</p>
+  <p className="affiliation">One Table Bridge</p>
   <p className="creator-name">Created By Mike Smith</p>
 </div>
         {/* Features Preview - Two Columns with Click Handlers */}
