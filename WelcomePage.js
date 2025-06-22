@@ -121,7 +121,6 @@ const WelcomePage = ({ onStartGame }) => {
   <p className="affiliation">ONE TABLE BRIDGE</p>
   <p className="creator-name">Created By Mike Smith</p>
 </div>
-        </div>
 
         {/* Features Preview - Two Columns with Click Handlers */}
         <div className="features-preview">
