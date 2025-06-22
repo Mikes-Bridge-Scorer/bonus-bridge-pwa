@@ -117,13 +117,10 @@ const WelcomePage = ({ onStartGame }) => {
 
         {/* Creator Credits - Compact */}
         <div className="credits-section">
-          <div className="creator-info">
-            <p className="creator-name">Created by Mike Smith</p>
-            <div className="affiliations">
-              <p className="affiliation">Javea School of Bridge</p>
-              <p className="affiliation">The Valley's International Bridge Club</p>
-            </div>
-          </div>
+         <div className="creator-info">
+  <p className="affiliation">ONE TABLE BRIDGE</p>
+  <p className="creator-name">Created By Mike Smith</p>
+</div>
         </div>
 
         {/* Features Preview - Two Columns with Click Handlers */}

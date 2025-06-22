@@ -158,8 +158,9 @@
   100% { opacity: 1; transform: translateY(0); }
 }
 
+/* Updated styling for the new text layout */
 .creator-name {
-  font-size: clamp(1rem, 5vw, 1.2rem);
+  font-size: clamp(1.1rem, 5.5vw, 1.4rem);
   font-weight: bold;
   color: #2c3e50;
   margin-bottom: 8px;
@@ -170,10 +171,11 @@
 }
 
 .affiliation {
-  font-size: clamp(0.8rem, 3.5vw, 0.9rem);
-  color: #666;
+  font-size: clamp(0.9rem, 4vw, 1rem);
+  color: #2c3e50;
   margin-bottom: 3px;
-  font-style: italic;
+  font-weight: bold;
+  font-style: normal;
 }
 
 /* Features Preview - Mobile optimized grid */
