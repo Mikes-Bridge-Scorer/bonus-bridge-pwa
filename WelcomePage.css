@@ -1,0 +1,460 @@
+/* WelcomePage.css - Mobile-First Responsive Design */
+
+.welcome-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1e5c8b 0%, #3498db 50%, #87CEFA 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Background animation */
+.welcome-page::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: 
+    radial-gradient(circle at 25% 25%, rgba(255,255,255,0.1) 0%, transparent 50%),
+    radial-gradient(circle at 75% 75%, rgba(255,255,255,0.05) 0%, transparent 50%);
+  animation: backgroundFloat 20s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes backgroundFloat {
+  0%, 100% { transform: rotate(0deg) translate(0, 0); }
+  50% { transform: rotate(180deg) translate(-10px, -10px); }
+}
+
+/* MOBILE-FIRST: Full width container */
+.welcome-container {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 15px;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 
+    0 10px 30px rgba(0, 0, 0, 0.2),
+    0 0 50px rgba(30, 92, 139, 0.1);
+  width: 100%;
+  max-width: 100%;
+  position: relative;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  min-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* Logo Animation - Mobile optimized */
+.logo-container {
+  margin-bottom: 15px;
+  transform: translateY(20px);
+  opacity: 0;
+  transition: all 1s ease-out;
+  flex-shrink: 0;
+}
+
+.logo-container.animated {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.app-logo {
+  filter: drop-shadow(0 5px 15px rgba(30, 92, 139, 0.3));
+  animation: logoFloat 6s ease-in-out infinite;
+  width: 100px;
+  height: 100px;
+}
+
+@keyframes logoFloat {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-5px) rotate(2deg); }
+}
+
+/* Animated elements within logo */
+.suit-symbol {
+  animation: suitPulse 3s ease-in-out infinite;
+  transform-origin: center;
+}
+
+.suit-symbol:nth-child(1) { animation-delay: 0s; }
+.suit-symbol:nth-child(2) { animation-delay: 0.5s; }
+.suit-symbol:nth-child(3) { animation-delay: 1s; }
+.suit-symbol:nth-child(4) { animation-delay: 1.5s; }
+
+@keyframes suitPulse {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.2); opacity: 1; }
+}
+
+.main-letter {
+  animation: letterGlow 4s ease-in-out infinite;
+}
+
+@keyframes letterGlow {
+  0%, 100% { text-shadow: 0 0 10px rgba(255,255,255,0.5); }
+  50% { text-shadow: 0 0 20px rgba(255,255,255,0.8); }
+}
+
+.bonus-text {
+  animation: textShimmer 5s ease-in-out infinite;
+}
+
+@keyframes textShimmer {
+  0%, 100% { opacity: 0.9; }
+  50% { opacity: 1; transform: scale(1.05); }
+}
+
+/* Typography - Mobile optimized */
+.app-title {
+  font-size: clamp(1.8rem, 8vw, 2.5rem);
+  font-weight: 700;
+  color: #1e5c8b;
+  margin-bottom: 10px;
+  font-family: 'Georgia', serif;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  animation: titleSlideIn 1.2s ease-out 0.5s both;
+  line-height: 1.2;
+}
+
+@keyframes titleSlideIn {
+  0% { opacity: 0; transform: translateY(30px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.app-subtitle {
+  font-size: clamp(1rem, 4vw, 1.2rem);
+  color: #555;
+  margin-bottom: 15px;
+  font-style: italic;
+  line-height: 1.4;
+  animation: subtitleFadeIn 1.2s ease-out 0.7s both;
+}
+
+@keyframes subtitleFadeIn {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Credits Section - Mobile optimized */
+.credits-section {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 12px;
+  padding: 15px;
+  margin: 15px 0;
+  border: 1px solid #e0e0e0;
+  animation: creditsSlideUp 1.2s ease-out 0.9s both;
+  flex-shrink: 0;
+}
+
+@keyframes creditsSlideUp {
+  0% { opacity: 0; transform: translateY(30px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Updated styling for the new text layout */
+.creator-name {
+  font-size: clamp(1.1rem, 5.5vw, 1.4rem);
+  font-weight: bold;
+  color: #2c3e50;
+  margin-bottom: 8px;
+}
+
+.affiliations {
+  margin-top: 8px;
+}
+
+.affiliation {
+  font-size: clamp(0.9rem, 4vw, 1rem);
+  color: #2c3e50;
+  margin-bottom: 3px;
+  font-weight: bold;
+  font-style: normal;
+}
+
+/* Features Preview - Mobile optimized grid */
+.features-preview {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 20px 0;
+  animation: featuresSlideIn 1.2s ease-out 1.1s both;
+  flex: 1;
+  align-content: center;
+}
+
+@keyframes featuresSlideIn {
+  0% { opacity: 0; transform: translateY(30px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.feature-item {
+  background: white;
+  padding: 15px 10px;
+  border-radius: 10px;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  font-size: clamp(0.8rem, 3.5vw, 0.9rem);
+  text-align: center;
+  min-height: 80px;
+  justify-content: center;
+}
+
+.feature-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(30, 92, 139, 0.2);
+}
+
+.feature-icon {
+  font-size: clamp(1.2rem, 6vw, 1.5rem);
+}
+
+/* Call to Action Button - Mobile optimized */
+.start-game-btn {
+  background: linear-gradient(135deg, #3c8c5c 0%, #4caf50 100%);
+  color: white;
+  border: none;
+  border-radius: 30px;
+  padding: 18px 30px;
+  font-size: clamp(1rem, 4.5vw, 1.2rem);
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin: 20px auto 0;
+  animation: buttonBounceIn 1.2s ease-out 1.3s both;
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  max-width: 280px;
+  min-height: 55px;
+  flex-shrink: 0;
+}
+
+@keyframes buttonBounceIn {
+  0% { opacity: 0; transform: scale(0.5); }
+  70% { transform: scale(1.05); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.start-game-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s;
+}
+
+.start-game-btn:hover::before {
+  left: 100%;
+}
+
+.start-game-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+}
+
+.start-game-btn:active {
+  transform: translateY(0);
+}
+
+.btn-text {
+  font-size: inherit;
+}
+
+.btn-icon {
+  font-size: clamp(1.1rem, 5vw, 1.3rem);
+  animation: iconRocket 2s ease-in-out infinite;
+}
+
+@keyframes iconRocket {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(5px); }
+}
+
+/* Clickable feature interactions */
+.clickable-feature {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.clickable-feature:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(30, 92, 139, 0.25);
+  background-color: #f8f9fa;
+}
+
+.clickable-feature:active {
+  transform: translateY(-1px);
+}
+
+/* Touch-friendly hover indication */
+.clickable-feature::after {
+  content: '👆';
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  font-size: 0.7rem;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.clickable-feature:hover::after {
+  opacity: 0.6;
+}
+
+/* Mobile Responsive Design */
+@media (max-width: 480px) {
+  .welcome-page {
+    padding: 5px;
+  }
+  
+  .welcome-container {
+    padding: 15px;
+    border-radius: 10px;
+    min-height: 90vh;
+  }
+  
+  .features-preview {
+    gap: 10px;
+    margin: 15px 0;
+  }
+  
+  .feature-item {
+    padding: 12px 8px;
+    min-height: 70px;
+  }
+  
+  .start-game-btn {
+    padding: 15px 25px;
+    min-height: 50px;
+  }
+  
+  .credits-section {
+    padding: 12px;
+    margin: 12px 0;
+  }
+}
+
+@media (max-width: 360px) {
+  .welcome-container {
+    padding: 12px;
+  }
+  
+  .features-preview {
+    gap: 8px;
+  }
+  
+  .feature-item {
+    padding: 10px 6px;
+    min-height: 65px;
+    font-size: 0.75rem;
+  }
+  
+  .feature-icon {
+    font-size: 1.1rem;
+  }
+}
+
+/* Landscape orientation optimization */
+@media (orientation: landscape) and (max-height: 600px) {
+  .welcome-container {
+    min-height: auto;
+    max-height: 95vh;
+    padding: 15px;
+  }
+  
+  .logo-container {
+    margin-bottom: 10px;
+  }
+  
+  .app-logo {
+    width: 80px;
+    height: 80px;
+  }
+  
+  .app-title {
+    margin-bottom: 8px;
+  }
+  
+  .app-subtitle {
+    margin-bottom: 10px;
+  }
+  
+  .credits-section {
+    padding: 10px;
+    margin: 10px 0;
+  }
+  
+  .features-preview {
+    margin: 15px 0;
+    gap: 10px;
+  }
+  
+  .feature-item {
+    min-height: 60px;
+    padding: 8px;
+  }
+  
+  .start-game-btn {
+    padding: 12px 25px;
+    min-height: 45px;
+    margin-top: 15px;
+  }
+}
+
+/* Large screens - tablet and desktop */
+@media (min-width: 768px) {
+  .welcome-container {
+    max-width: 500px;
+    padding: 40px;
+    border-radius: 20px;
+  }
+  
+  .features-preview {
+    gap: 15px;
+    margin: 25px 0;
+  }
+  
+  .feature-item {
+    padding: 20px 15px;
+    min-height: 100px;
+  }
+  
+  .start-game-btn {
+    padding: 20px 40px;
+    max-width: 320px;
+    min-height: 60px;
+  }
+  
+  .app-logo {
+    width: 120px;
+    height: 120px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .welcome-container {
+    max-width: 600px;
+    padding: 50px;
+  }
+}
