@@ -477,14 +477,6 @@ const ScoreAdjustment = ({ currentDeal, onSaveAdjustment, onCancel }) => {
         {createButton('info', 'show-explanation', false, 'What is this?', 'info-btn')}
       </div>
       
-      <div className="points-guide">
-        <strong>Counting Guide:</strong> Add up the combined HCP (High Card Points) for Declarer + Dummy.
-        <br />
-        Ace = 4 points | King = 3 points | Queen = 2 points | Jack = 1 point
-        <br />
-        Also count distribution: Singletons, Voids, and Long Suits (6+ cards in one suit).
-      </div>
-      
       <div className="contract-info">
         <h3>
           Contract: {formatContract()} {formatResult()}
