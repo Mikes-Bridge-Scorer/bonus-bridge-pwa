@@ -132,11 +132,6 @@ const ScoreAdjustment = ({ currentDeal, onSaveAdjustment, onCancel }) => {
     });
   };
 
-  // Handler for showing explanation
-  const handleShowExplanation = () => {
-    setShowExplanation(true);
-  };
-  
   // Handler for hiding explanation
   const handleHideExplanation = () => {
     setShowExplanation(false);
@@ -329,7 +324,7 @@ const ScoreAdjustment = ({ currentDeal, onSaveAdjustment, onCancel }) => {
       }
       
       if (level === 6) {
-        levelPenalties += 5;
+        levelPenalities += 5;
       } else if (level === 7) {
         levelPenalties += 7;
       }
