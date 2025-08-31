@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import BonusBridgeExplanation from './BonusBridgeExplanation';
 import './ScoreAdjustment.css';
 
@@ -12,6 +12,9 @@ const ScoreAdjustment = ({ currentDeal, onSaveAdjustment, onCancel }) => {
   const [showExplanation, setShowExplanation] = useState(false);
   // State for flashing effect
   const [isFlashing, setIsFlashing] = useState(true);
+  
+  // Refs for Pixel 9a touch optimization
+  const containerRef = useRef(null);
   
   // Effect to initialize with default values based on current deal
   useEffect(() => {
@@ -35,6 +38,70 @@ const ScoreAdjustment = ({ currentDeal, onSaveAdjustment, onCancel }) => {
     
     return () => clearInterval(flashInterval);
   }, []);
+  
+  // Pixel 9a optimized event handler creator
+  const createPixelHandler = (action, value = null) => {
+    return (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      console.log(`🔥 Pixel 9a action: ${action}`);
+      
+      // Visual feedback
+      const btn = e.target;
+      btn.style.transform = 'scale(0.95)';
+      btn.style.opacity = '0.8';
+      
+      // Haptic feedback
+      if (navigator.vibrate) {
+        navigator.vibrate([30]);
+      }
+      
+      // Execute action after feedback
+      setTimeout(() => {
+        switch (action) {
+          case 'hcp-increment':
+            handleHCPChange(1);
+            break;
+          case 'hcp-decrement':
+            handleHCPChange(-1);
+            break;
+          case 'singleton-increment':
+            handleSingletonChange(1);
+            break;
+          case 'singleton-decrement':
+            handleSingletonChange(-1);
+            break;
+          case 'void-increment':
+            handleVoidChange(1);
+            break;
+          case 'void-decrement':
+            handleVoidChange(-1);
+            break;
+          case 'longsuit-increment':
+            handleLongSuitChange(1);
+            break;
+          case 'longsuit-decrement':
+            handleLongSuitChange(-1);
+            break;
+          case 'save':
+            handleSave();
+            break;
+          case 'cancel':
+            onCancel();
+            break;
+          case 'show-explanation':
+            setShowExplanation(true);
+            break;
+          default:
+            break;
+        }
+        
+        // Reset visual feedback
+        btn.style.transform = 'scale(1)';
+        btn.style.opacity = '1';
+      }, 100);
+    };
+  };
   
   // Validate and handle input changes
   const handleHCPChange = (increment) => {
@@ -370,23 +437,34 @@ const ScoreAdjustment = ({ currentDeal, onSaveAdjustment, onCancel }) => {
     }
   };
   
-  // Fixed styles for info button
-  const fixedInfoButtonStyle = {
-    backgroundColor: '#468bbf',
-    color: 'white',
-    border: 'none',
-    padding: '8px 12px',
-    borderRadius: '4px',
-    fontSize: '14px',
-    cursor: 'pointer',
-    position: 'absolute',
-    right: '15px',
-    top: '0px',
-    zIndex: 10
+  // Create button with Pixel 9a optimization
+  const createButton = (type, action, disabled = false, text, className = '') => {
+    const handleClick = createPixelHandler(action);
+    const handleTouch = createPixelHandler(action);
+    
+    return (
+      <button 
+        className={className}
+        onClick={handleClick}
+        onTouchEnd={handleTouch}
+        disabled={disabled}
+        style={{
+          touchAction: 'manipulation',
+          userSelect: 'none',
+          WebkitTapHighlightColor: 'transparent',
+          minHeight: '50px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}
+      >
+        {text}
+      </button>
+    );
   };
   
   return (
-    <div className="score-adjustment">
+    <div className="score-adjustment" ref={containerRef}>
       <h1 className="main-title">Bonus Bridge Score Adjustment</h1>
       
       <div className={`pause-notice ${isFlashing ? 'flashing' : ''}`}>
@@ -395,13 +473,8 @@ const ScoreAdjustment = ({ currentDeal, onSaveAdjustment, onCancel }) => {
         Declarer and Dummy, please show your cards to all players.
       </div>
       
-      <div style={{ position: 'relative', height: '40px', marginBottom: '10px' }}>
-        <button 
-          style={fixedInfoButtonStyle}
-          onClick={handleShowExplanation}
-        >
-          What is this?
-        </button>
+      <div className="help-button-container">
+        {createButton('info', 'show-explanation', false, 'What is this?', 'info-btn')}
       </div>
       
       <div className="points-guide">
@@ -423,102 +496,43 @@ const ScoreAdjustment = ({ currentDeal, onSaveAdjustment, onCancel }) => {
         <div className="input-section">
           <h3>Combined HCP (Declarer + Dummy)</h3>
           <div className="numeric-input">
-            <button 
-              className="decrement-btn"
-              onClick={() => handleHCPChange(-1)}
-              disabled={totalHCP <= 0}
-            >
-              -
-            </button>
+            {createButton('decrement', 'hcp-decrement', totalHCP <= 0, '-', 'decrement-btn')}
             <div className="input-value">{totalHCP}</div>
-            <button 
-              className="increment-btn"
-              onClick={() => handleHCPChange(1)}
-              disabled={totalHCP >= 40}
-            >
-              +
-            </button>
+            {createButton('increment', 'hcp-increment', totalHCP >= 40, '+', 'increment-btn')}
           </div>
         </div>
         
         <div className="input-section">
           <h3>Number of Singletons</h3>
           <div className="numeric-input">
-            <button 
-              className="decrement-btn"
-              onClick={() => handleSingletonChange(-1)}
-              disabled={singletons <= 0}
-            >
-              -
-            </button>
+            {createButton('decrement', 'singleton-decrement', singletons <= 0, '-', 'decrement-btn')}
             <div className="input-value">{singletons}</div>
-            <button 
-              className="increment-btn"
-              onClick={() => handleSingletonChange(1)}
-              disabled={singletons >= 4}
-            >
-              +
-            </button>
+            {createButton('increment', 'singleton-increment', singletons >= 4, '+', 'increment-btn')}
           </div>
         </div>
         
         <div className="input-section">
           <h3>Number of Voids</h3>
           <div className="numeric-input">
-            <button 
-              className="decrement-btn"
-              onClick={() => handleVoidChange(-1)}
-              disabled={voids <= 0}
-            >
-              -
-            </button>
+            {createButton('decrement', 'void-decrement', voids <= 0, '-', 'decrement-btn')}
             <div className="input-value">{voids}</div>
-            <button 
-              className="increment-btn"
-              onClick={() => handleVoidChange(1)}
-              disabled={voids >= 4}
-            >
-              +
-            </button>
+            {createButton('increment', 'void-increment', voids >= 4, '+', 'increment-btn')}
           </div>
         </div>
         
         <div className="input-section">
           <h3>Number of Long Suits (6+ cards)</h3>
           <div className="numeric-input">
-            <button 
-              className="decrement-btn"
-              onClick={() => handleLongSuitChange(-1)}
-              disabled={longSuits <= 0}
-            >
-              -
-            </button>
+            {createButton('decrement', 'longsuit-decrement', longSuits <= 0, '-', 'decrement-btn')}
             <div className="input-value">{longSuits}</div>
-            <button 
-              className="increment-btn"
-              onClick={() => handleLongSuitChange(1)}
-              disabled={longSuits >= 4}
-            >
-              +
-            </button>
+            {createButton('increment', 'longsuit-increment', longSuits >= 4, '+', 'increment-btn')}
           </div>
         </div>
       </div>
       
       <div className="action-buttons">
-        <button 
-          className="cancel-btn"
-          onClick={onCancel}
-        >
-          Cancel
-        </button>
-        
-        <button 
-          className="save-btn"
-          onClick={handleSave}
-        >
-          Calculate Final Score
-        </button>
+        {createButton('cancel', 'cancel', false, 'Cancel', 'cancel-btn')}
+        {createButton('save', 'save', false, 'Calculate Final Score', 'save-btn')}
       </div>
       
       {showExplanation && (

@@ -1,60 +1,92 @@
-/* Mobile-optimized ScoreAdjustment.css with larger text */
+/* Mobile-first ScoreAdjustment.css with scrolling fix and Pixel 9a touch optimization */
 
 .score-adjustment {
-  width: 100%;
-  max-width: 100%;
-  margin: 0 auto;
+  /* CRITICAL: Enable proper scrolling on mobile */
+  width: 100vw;
+  max-width: 100vw;
+  height: 100vh;
+  max-height: 100vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch; /* iOS smooth scrolling */
+  
+  /* Layout */
+  margin: 0;
   padding: 15px;
   font-family: Arial, sans-serif;
   border: 3px solid #000;
   border-radius: 12px;
   background-color: #f9f9f9;
   box-sizing: border-box;
+  
+  /* Pixel 9a touch optimization */
+  touch-action: pan-y; /* Allow vertical scrolling */
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  
+  /* Ensure content fits within viewport */
+  display: flex;
+  flex-direction: column;
 }
 
 /* Main title */
 .main-title {
-  font-size: 24px;
+  font-size: 20px; /* Reduced for mobile */
   font-weight: bold;
   color: #1e5c8b;
   text-align: center;
-  margin: 10px 0;
+  margin: 8px 0;
+  flex-shrink: 0; /* Don't compress */
 }
 
 /* Flashing pause notice */
 .pause-notice {
-  font-size: 18px;
+  font-size: 16px; /* Reduced for mobile */
   font-weight: bold;
   text-align: center;
-  margin: 12px 0;
-  padding: 10px;
+  margin: 10px 0;
+  padding: 8px;
   border-radius: 8px;
   background-color: #fff;
   color: #ff4d4d;
   transition: color 0.3s;
+  flex-shrink: 0; /* Don't compress */
 }
 
 .pause-notice.flashing {
   color: #ff0000;
 }
 
-/* Help button container */
+/* Help button container - Fixed positioning */
 .help-button-container {
-  display: flex;
-  justify-content: flex-end;
-  margin: 10px 0;
+  position: relative;
+  height: 35px;
+  margin: 8px 0;
+  flex-shrink: 0;
 }
 
-/* Info button */
+/* Info button - Pixel 9a optimized */
 .info-btn {
-  background-color: #3498db;
+  background-color: #468bbf;
   color: white;
   border: none;
   border-radius: 6px;
   padding: 10px 15px;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: bold;
   cursor: pointer;
+  position: absolute;
+  right: 0;
+  top: 0;
+  
+  /* Pixel 9a touch optimization */
+  min-width: 50px;
+  min-height: 50px;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .info-btn:hover {
@@ -64,65 +96,70 @@
 /* Points guide */
 .points-guide {
   background-color: #e3f2fd;
-  padding: 12px;
+  padding: 10px;
   border-radius: 8px;
-  margin: 15px 0;
-  font-size: 16px;
-  line-height: 1.4;
+  margin: 10px 0;
+  font-size: 14px;
+  line-height: 1.3;
   border: 1px solid #bbdefb;
+  flex-shrink: 0;
 }
 
 .points-guide strong {
   color: #1565c0;
-  font-size: 17px;
+  font-size: 15px;
 }
 
 /* Contract info */
 .contract-info {
   background-color: #fff;
-  padding: 15px;
+  padding: 12px;
   border-radius: 8px;
-  margin: 15px 0;
+  margin: 10px 0;
   border: 1px solid #ddd;
+  flex-shrink: 0;
 }
 
-.contract-info h2 {
-  font-size: 18px;
+.contract-info h3 {
+  font-size: 16px;
   color: #1e5c8b;
-  margin: 0 0 10px 0;
+  margin: 0 0 8px 0;
 }
 
 .contract-info p {
-  font-size: 17px;
+  font-size: 15px;
   margin: 0;
 }
 
-/* Input sections */
+/* Input sections - Allow scrolling */
 .input-sections {
   display: flex;
   flex-direction: column;
-  gap: 15px;
-  margin: 15px 0;
+  gap: 12px;
+  margin: 10px 0;
+  flex: 1; /* Take available space */
+  min-height: 0; /* Allow shrinking */
 }
 
 .input-section {
   background-color: #fff;
-  padding: 15px;
+  padding: 12px;
   border-radius: 8px;
   border: 1px solid #ddd;
+  flex-shrink: 0;
 }
 
-.input-section h2 {
-  font-size: 18px;
+.input-section h3 {
+  font-size: 16px;
   color: #1e5c8b;
-  margin: 0 0 12px 0;
+  margin: 0 0 10px 0;
 }
 
-/* Numeric input */
+/* Numeric input - Pixel 9a optimized */
 .numeric-input {
   display: flex;
   align-items: center;
-  height: 50px;
+  height: 50px; /* Minimum for Pixel 9a */
   border-radius: 8px;
   overflow: hidden;
   border: 1px solid #ccc;
@@ -130,7 +167,7 @@
 
 .decrement-btn, .increment-btn {
   width: 60px;
-  height: 50px;
+  height: 50px; /* Pixel 9a minimum */
   background-color: #1e5c8b;
   color: white;
   border: none;
@@ -140,6 +177,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  
+  /* Pixel 9a touch optimization */
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  min-height: 50px;
 }
 
 .increment-btn {
@@ -151,29 +194,44 @@
   cursor: not-allowed;
 }
 
+.decrement-btn:active, .increment-btn:active {
+  transform: scale(0.95);
+  opacity: 0.8;
+}
+
 .input-value {
   flex-grow: 1;
   text-align: center;
-  font-size: 26px;
+  font-size: 24px;
   font-weight: bold;
 }
 
-/* Action buttons */
+/* Action buttons - Pixel 9a optimized */
 .action-buttons {
   display: flex;
   justify-content: space-between;
-  gap: 15px;
-  margin-top: 20px;
+  gap: 12px;
+  margin: 15px 0 10px 0;
+  flex-shrink: 0;
 }
 
 .cancel-btn, .save-btn {
   flex: 1;
-  height: 56px;
-  font-size: 18px;
+  height: 50px; /* Pixel 9a minimum */
+  min-height: 50px;
+  font-size: 16px;
   font-weight: bold;
   border: none;
   border-radius: 8px;
   cursor: pointer;
+  
+  /* Pixel 9a touch optimization */
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .cancel-btn {
@@ -186,61 +244,77 @@
   color: white;
 }
 
+.cancel-btn:active, .save-btn:active {
+  transform: scale(0.95);
+  opacity: 0.8;
+}
+
 /* Styles for the BonusBridgeExplanation component */
 .bonus-bridge-explanation {
   z-index: 1000;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .explanation-content {
-  width: 98%;
-  max-width: 98%;
-  height: 98vh;
+  width: 100%;
+  max-width: 100%;
+  min-height: 100vh;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .explanation-header {
   position: sticky;
   top: 0;
   z-index: 10;
+  background-color: #fff;
+  padding: 10px;
 }
 
 .explanation-header h2 {
-  font-size: 20px;
+  font-size: 18px;
+  margin: 0;
 }
 
 .explanation-body {
-  font-size: 16px;
+  font-size: 15px;
+  padding: 15px;
 }
 
 .explanation-body h3 {
-  font-size: 18px;
+  font-size: 16px;
 }
 
 .explanation-body h4 {
-  font-size: 17px;
+  font-size: 15px;
 }
 
 .core-principles li {
-  font-size: 16px;
-  padding: 10px 0;
+  font-size: 15px;
+  padding: 8px 0;
 }
 
 .expected-hcp-table {
-  font-size: 16px;
+  font-size: 14px;
 }
 
 .done-btn {
-  font-size: 18px;
+  font-size: 16px;
   padding: 12px 30px;
   border-radius: 8px;
+  min-height: 50px;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
-@keyframes flash {
-  0%, 50% { color: #ff0000; }
-  51%, 100% { color: #ff6b6b; }
-}
-
-/* Apply flashing animation */
+/* Flash animation */
 @keyframes flash {
   0% { color: #ff0000; }
   50% { color: #ff6b6b; }
@@ -251,21 +325,82 @@
   animation: flash 1.6s infinite;
 }
 
-/* Media queries for different screen sizes */
+/* Tablet and larger screens */
 @media (min-width: 768px) {
   .score-adjustment {
     max-width: 600px;
+    margin: 0 auto;
+    height: auto;
+    max-height: none;
     padding: 20px;
+  }
+  
+  .main-title {
+    font-size: 24px;
+  }
+  
+  .pause-notice {
+    font-size: 18px;
+  }
+  
+  .points-guide {
+    font-size: 16px;
   }
   
   .input-sections {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+  }
+  
+  .explanation-content {
+    width: 98%;
+    max-width: 98%;
+    height: 98vh;
   }
 }
 
-/* Ensure the popup takes full screen on mobile */
+/* Small mobile devices */
 @media (max-width: 480px) {
+  .score-adjustment {
+    border-radius: 8px;
+    padding: 12px;
+  }
+  
+  .main-title {
+    font-size: 18px;
+  }
+  
+  .pause-notice {
+    font-size: 14px;
+    padding: 6px;
+  }
+  
+  .points-guide {
+    font-size: 13px;
+    padding: 8px;
+  }
+  
+  .input-section {
+    padding: 10px;
+  }
+  
+  .input-section h3 {
+    font-size: 15px;
+  }
+  
+  .input-value {
+    font-size: 22px;
+  }
+  
+  .action-buttons {
+    gap: 10px;
+  }
+  
+  .cancel-btn, .save-btn {
+    font-size: 15px;
+  }
+  
   .explanation-content {
     width: 100%;
     height: 100vh;
@@ -273,11 +408,49 @@
   }
   
   .explanation-header h2 {
-    font-size: 18px;
+    font-size: 16px;
   }
   
   .explanation-body {
-    font-size: 15px;
-    padding: 15px;
+    font-size: 14px;
+    padding: 12px;
+  }
+}
+
+/* Landscape orientation fixes for mobile */
+@media (max-height: 600px) and (orientation: landscape) {
+  .score-adjustment {
+    height: 100vh;
+    overflow-y: auto;
+  }
+  
+  .main-title {
+    font-size: 16px;
+    margin: 5px 0;
+  }
+  
+  .pause-notice {
+    font-size: 13px;
+    margin: 5px 0;
+    padding: 5px;
+  }
+  
+  .points-guide {
+    font-size: 12px;
+    padding: 6px;
+    margin: 5px 0;
+  }
+  
+  .input-section {
+    padding: 8px;
+  }
+  
+  .input-section h3 {
+    font-size: 14px;
+    margin: 0 0 5px 0;
+  }
+  
+  .action-buttons {
+    margin: 10px 0 5px 0;
   }
 }
