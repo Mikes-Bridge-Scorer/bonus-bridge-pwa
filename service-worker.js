@@ -2,8 +2,8 @@
 
 // This service worker file should be placed in your public folder
 // IMPORTANT: Update version numbers when releasing new versions
-const CACHE_NAME = 'bonus-bridge-cache-v1.0.2';
-const APP_VERSION = '1.0.2';  // Keep in sync with index.js
+const CACHE_NAME = 'bonus-bridge-cache-v1.0.3';
+const APP_VERSION = '1.0.3';  // Keep in sync with index.js
 
 // Files to cache for offline use - Updated for build output
 const urlsToCache = [
