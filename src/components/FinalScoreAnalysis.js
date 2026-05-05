@@ -31,15 +31,14 @@ const FinalScoreAnalysis = ({
     totalHCP,
     declarerHCPPercentage,
     defenderHCPPercentage,
-    hcpAdvantage,
-    advantageSide,
     expectedHCP,
+    hcpSurplus,
+    hcpDeficit,
     singletons,
     voids,
     longSuits,
     distributionPoints,
     contractExpectedTricks,
-    handExpectedTricks,
     nsPoints,
     ewPoints
   } = analysisData;
@@ -239,65 +238,94 @@ const FinalScoreAnalysis = ({
     }
   };
   
-  // Get calculation steps for display
+  // Get calculation steps for display — Version 2.0 field names
   const getCalculationSteps = () => {
     if (madeContract) {
-      return [
-        { 
-          label: "1. Raw Score / 20:", 
-          value: `${(analysisData.rawScore || 0).toFixed(1)} points` 
+      const steps = [
+        {
+          label: "1. Base Score:",
+          value: `${analysisData.base || 30} points`
         },
-        { 
-          label: "2. HCP Adjustment:", 
-          value: `${(analysisData.hcpAdjustment || 0).toFixed(2)} points` 
+        {
+          label: `2. HCP Adjustment (${analysisData.hcpSurplus > 0
+            ? `${analysisData.hcpSurplus} surplus — strong hand penalty`
+            : analysisData.hcpDeficit > 0
+              ? `${analysisData.hcpDeficit} deficit — weak hand bonus`
+              : 'exactly on expected'}):`,
+          value: `${(analysisData.rawHcpAdj || 0) >= 0
+            ? '+' : ''}${(analysisData.rawHcpAdj || 0).toFixed(1)} points`
         },
-        { 
-          label: "3. After HCP Adjustment:", 
-          value: `${(analysisData.afterHcpAdjustment || 0).toFixed(1)} points` 
+        {
+          label: "3. After HCP Adjustment:",
+          value: `${(analysisData.afterHcp || 0).toFixed(1)} points`
         },
-        { 
-          label: "4. Performance Variance:", 
-          value: `${analysisData.performanceVariance || 0} tricks` 
+        {
+          label: `4. Contract Level Bonus (${analysisData.levelDescription || 'Part score'}):`,
+          value: `+${(analysisData.levelBonus || 0).toFixed(1)} points`
         },
-        { 
-          label: "5. After Performance Assessment:", 
-          value: `${(analysisData.afterPerformanceAssessment || 0).toFixed(1)} points` 
+        {
+          label: "5. Weak Hand Part Score Bonus:",
+          value: `+${(analysisData.weakPartScoreBonus || 0).toFixed(1)} points`
         },
-        { 
-          label: "6. Contract Type Adjustment:", 
-          value: `${(analysisData.contractTypeAdjustment || 0).toFixed(1)} ${analysisData.contractTypeDescription || ''}` 
+        {
+          label: `6. Overtrick Bonus (${analysisData.overtricks || 0} trick${analysisData.overtricks !== 1 ? 's' : ''}):`,
+          value: `+${(analysisData.overtrickBonus || 0).toFixed(1)} points`
         },
-        { 
-          label: "7. After Contract Adjustments:", 
-          value: `${(analysisData.afterContractAdjustments || 0).toFixed(1)} points` 
+        {
+          label: "7. Distribution Penalty:",
+          value: `-${(analysisData.distPenalty || 0).toFixed(1)} points`
         },
-        { 
-          label: "8. Distribution Adjustment:", 
-          value: `${(analysisData.distributionAdjustment || 0).toFixed(1)} points` 
+        {
+          label: "8. Declarer Final Score:",
+          value: `${analysisData.declarerFinal || 0} points`
         },
-        { 
-          label: "9. Defender Reward:", 
-          value: `${(analysisData.defenderReward || 0).toFixed(1)} points` 
-        }
+        {
+          label: `9. Defender Reward (${analysisData.hcpSurplus || 0} surplus pts × 1.0):`,
+          value: `${(analysisData.defenderBase || 0).toFixed(1)} points`
+        },
       ];
+      if (analysisData.defenderOvertrickBonus > 0) {
+        steps.push({
+          label: "10. Defender Overtrick Bonus:",
+          value: `+${(analysisData.defenderOvertrickBonus || 0).toFixed(1)} points`
+        });
+      }
+      return steps;
     } else {
-      // For defeated contracts
+      // Defeated contracts
       return [
-        { 
-          label: "1. Base Penalty:", 
-          value: `${(analysisData.basePenalty || 0).toFixed(1)} points` 
+        {
+          label: "1. Base Score (Defenders):",
+          value: `${analysisData.base || 30} points`
         },
-        { 
-          label: "2. Contract Level Penalties:", 
-          value: `${(analysisData.levelPenalties || 0).toFixed(1)} points` 
+        {
+          label: `2. HCP Adjustment (${analysisData.hcpSurplus > 0
+            ? `${analysisData.hcpSurplus} surplus — strong hand went down`
+            : analysisData.hcpDeficit > 0
+              ? `${analysisData.hcpDeficit} deficit — weak hand went down`
+              : 'balanced'}):`,
+          value: `${(analysisData.rawHcpAdj || 0) >= 0
+            ? '+' : ''}${(analysisData.rawHcpAdj || 0).toFixed(1)} points`
         },
-        { 
-          label: "3. Performance Bonus:", 
-          value: `${(analysisData.performanceBonus || 0).toFixed(1)} points` 
+        {
+          label: "3. After HCP Adjustment:",
+          value: `${(analysisData.afterHcp || 0).toFixed(1)} points`
         },
-        { 
-          label: "4. Declarer Consolation:", 
-          value: `${(analysisData.consolationPoints || 0).toFixed(1)} points` 
+        {
+          label: `4. Defeat Margin (${analysisData.defeatDescription || 'Down 1'}):`,
+          value: `+${(analysisData.defeatMarginBonus || 0).toFixed(1)} points`
+        },
+        {
+          label: `5. Contract Level Bonus (${analysisData.defeatedLevelDescription || 'Part score'}):`,
+          value: `+${(analysisData.defeatedLevelBonus || 0).toFixed(1)} points`
+        },
+        {
+          label: "6. Defender Final Score:",
+          value: `${analysisData.defenderFinal || 0} points`
+        },
+        {
+          label: "7. Declarer Consolation (weak hand):",
+          value: `${(analysisData.consolationPoints || 0).toFixed(1)} points`
         }
       ];
     }
@@ -514,16 +542,24 @@ const FinalScoreAnalysis = ({
                 <span className="detail-value">{totalHCP}</span>
               </div>
               <div className="detail-row">
+                <span className="detail-label">Expected HCP for Contract:</span>
+                <span className="detail-value">{expectedHCP}</span>
+              </div>
+              <div className="detail-row">
+                <span className="detail-label">HCP Surplus (strong hand):</span>
+                <span className="detail-value">{hcpSurplus > 0 ? `+${hcpSurplus}` : '—'}</span>
+              </div>
+              <div className="detail-row">
+                <span className="detail-label">HCP Deficit (weak hand):</span>
+                <span className="detail-value">{hcpDeficit > 0 ? `-${hcpDeficit}` : '—'}</span>
+              </div>
+              <div className="detail-row">
                 <span className="detail-label">Declarer HCP Percentage:</span>
                 <span className="detail-value">{declarerHCPPercentage}%</span>
               </div>
               <div className="detail-row">
                 <span className="detail-label">Defender HCP Percentage:</span>
                 <span className="detail-value">{defenderHCPPercentage}%</span>
-              </div>
-              <div className="detail-row">
-                <span className="detail-label">HCP Advantage:</span>
-                <span className="detail-value">{hcpAdvantage}% to {advantageSide}</span>
               </div>
               <div className="detail-row">
                 <span className="detail-label">Number of Singletons:</span>
@@ -542,16 +578,8 @@ const FinalScoreAnalysis = ({
                 <span className="detail-value">{distributionPoints}</span>
               </div>
               <div className="detail-row">
-                <span className="detail-label">Expected HCP for Contract:</span>
-                <span className="detail-value">{expectedHCP}</span>
-              </div>
-              <div className="detail-row">
                 <span className="detail-label">Contract Expected Tricks:</span>
                 <span className="detail-value">{contractExpectedTricks}</span>
-              </div>
-              <div className="detail-row">
-                <span className="detail-label">Hand Expected Tricks:</span>
-                <span className="detail-value">{handExpectedTricks}</span>
               </div>
             </div>
           </div>
