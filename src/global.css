@@ -221,16 +221,11 @@ button:active {
   font-size: 16px;
 }
 
-/* Required tricks - compact */
+/* Required tricks - highlighted, full-width, styled in TrickInput.css */
 .required-tricks {
-  display: inline-block;
-  font-size: 14px;
+  display: block;
+  width: 100%;
   margin-bottom: 8px;
-  color: var(--dark-blue);
-  background-color: #f2f8ff;
-  padding: 6px 10px;
-  border-radius: var(--button-radius);
-  border: 1px solid #d0e1f9;
 }
 
 /* Footer Controls - fixed height */
