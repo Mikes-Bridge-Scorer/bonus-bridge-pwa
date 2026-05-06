@@ -93,12 +93,10 @@ const BridgeGameUI = ({
     setShowQuitConfirm(false);
   };
 
-  // Handle quitting the app
+  // Handle quitting the app — return to welcome screen
   const handleQuit = () => {
-    // This would actually close the app in a native environment
-    // For web, we'll just show an alert
-    alert('App would close here in the final version');
-    // You would add your native app closing code here
+    setShowQuitConfirm(false);
+    window.location.reload();
   };
 
   // Handle contract input changes

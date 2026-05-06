@@ -63,129 +63,168 @@ const BonusBridgeExplanation = ({ onClose }) => {
             <div className="overview-tab">
               <h3>What is Bonus Bridge?</h3>
               <p>
-                An enhanced scoring system that rewards both declarers and defenders based on hand strength and performance versus expectations.
+                A skill-based scoring system that rewards both declarers and defenders based on the strength of their cards relative to what the contract needed — not just whether the contract was made.
               </p>
-              
+
+              <h3>Core Principles</h3>
+              <ul>
+                <li><strong>Strong hand makes contract:</strong> Unimpressive — penalised</li>
+                <li><strong>Weak hand makes contract:</strong> Skilful — rewarded handsomely</li>
+                <li><strong>Strong hand goes down:</strong> Punished heavily</li>
+                <li><strong>Weak hand goes down:</strong> Defenders rewarded, but not excessively</li>
+              </ul>
+
               <h3>Key Features</h3>
               <ul>
-                <li>
-                  <strong>HCP Balance:</strong> Evaluates point distribution between teams
-                </li>
-                <li>
-                  <strong>Performance Analysis:</strong> Compares expected vs. actual tricks
-                </li>
-                <li>
-                  <strong>Contract Ambition:</strong> Rewards appropriate bidding choices
-                </li>
-                <li>
-                  <strong>Distribution Points:</strong> Accounts for shapely hands
-                </li>
+                <li><strong>Vulnerability irrelevant:</strong> We measure skill, not luck of the deal</li>
+                <li><strong>Both sides score:</strong> Defenders earn points on every deal</li>
+                <li><strong>Contract level rewarded:</strong> Bidding and making slams scores highest</li>
+                <li><strong>Base score 30:</strong> All scores start at 30 and adjust from there</li>
               </ul>
-              
+
               <h3>How It Works</h3>
               <p>
-                After each deal, enter the HCP and distribution for declarer/dummy and defenders. The system calculates expected performance and adjusts scores based on actual results.
+                After each deal, count the combined HCP for Declarer and Dummy, plus any distribution points. The app calculates how strong or weak the hand was relative to the contract bid, and adjusts scores accordingly.
               </p>
             </div>
           )}
-          
-          {/* HCP & Distribution Tab */}
+
+          {/* HCP Tab */}
           {activeTab === 'hcp' && (
             <div className="hcp-tab">
               <h3>High Card Points</h3>
-              <p>
-                Standard valuation: A=4, K=3, Q=2, J=1
-              </p>
-              
-              <h3>Expected HCP by Level</h3>
+              <p>Standard valuation: A=4, K=3, Q=2, J=1 (maximum 40 in the deck)</p>
+
+              <h3>Expected HCP by Contract</h3>
+              <p>Each contract has an expected HCP — the amount you'd typically need to make it:</p>
               <table className="expected-hcp-table">
                 <thead>
                   <tr>
-                    <th>Level</th>
+                    <th>Contract</th>
                     <th>Expected HCP</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr><td>1-2</td><td>20-24</td></tr>
-                  <tr><td>3</td><td>25-26</td></tr>
-                  <tr><td>4</td><td>27-28</td></tr>
-                  <tr><td>5</td><td>29-30</td></tr>
-                  <tr><td>6</td><td>31-35</td></tr>
-                  <tr><td>7</td><td>36+</td></tr>
+                  <tr><td>Part score (1–2 level)</td><td>21</td></tr>
+                  <tr><td>3 major (♥/♠)</td><td>23</td></tr>
+                  <tr><td>3NT</td><td>25</td></tr>
+                  <tr><td>4 major game (♥/♠)</td><td>24</td></tr>
+                  <tr><td>5 minor game (♣/♦)</td><td>27</td></tr>
+                  <tr><td>Small slam (6 level)</td><td>30</td></tr>
+                  <tr><td>Grand slam (7 level)</td><td>32</td></tr>
                 </tbody>
               </table>
-              
-              <h3>HCP Balance Impact</h3>
+
+              <h3>Surplus and Deficit</h3>
               <ul>
-                <li><strong>Advantage (60%+):</strong> Reduced performance bonuses</li>
-                <li><strong>Disadvantage (40%-):</strong> Increased bonuses for success</li>
+                <li><strong>Surplus</strong> = you had more HCP than expected → penalty of 1.5 pts per surplus point</li>
+                <li><strong>Deficit</strong> = you had fewer HCP than expected → bonus of 1.5 pts per deficit point</li>
               </ul>
-              
+
               <h3>Distribution Points</h3>
               <ul>
-                <li>Singleton: 1 pt</li>
-                <li>Void: 3 pts</li>
-                <li>Long suit (6+): 1 pt per card over 4</li>
+                <li>Void: 3 points</li>
+                <li>Singleton: 2 points</li>
+                <li>Long suit (6+ cards): 1 point</li>
               </ul>
+              <p>High distribution reduces your declarer score slightly — shapely hands make contracts easier.</p>
             </div>
           )}
-          
+
           {/* Performance Tab */}
           {activeTab === 'performance' && (
             <div className="performance-tab">
-              <h3>Expected Tricks</h3>
-              <div className="formula">
-                6 + (HCP / 3) + (Distribution / 4)
-              </div>
-              
-              <h3>Performance Adjustments</h3>
+              <h3>Made Contracts — Declarer Score</h3>
               <ul>
-                <li><strong>Over-performance:</strong> +10 pts per extra trick</li>
-                <li><strong>Under-performance:</strong> -8 pts per missed trick</li>
+                <li><strong>Base:</strong> 30 points</li>
+                <li><strong>Strong hand (surplus):</strong> −1.5 pts per HCP above expected</li>
+                <li><strong>Weak hand (deficit):</strong> +1.5 pts per HCP below expected</li>
+                <li><strong>Game bonus:</strong> +3 pts</li>
+                <li><strong>Small slam bonus:</strong> +8 pts</li>
+                <li><strong>Grand slam bonus:</strong> +15 pts</li>
+                <li><strong>Weak hand part score bonus:</strong> +3 pts (if deficit &gt; 3)</li>
+                <li><strong>Overtricks:</strong> +1 pt each (max +3)</li>
+                <li><strong>Distribution penalty:</strong> −1 to −3 pts for shapely hands</li>
               </ul>
-              
-              <h3>Contract Ambition</h3>
+
+              <h3>Made Contracts — Defender Score</h3>
               <ul>
-                <li><strong>Underbidding:</strong> -10 pts (with strong hands)</li>
-                <li><strong>Appropriate bidding:</strong> No penalty</li>
+                <li>1.0 pt per HCP surplus point declarer held</li>
+                <li>+1 pt per overtrick if declarer had surplus &gt; 3</li>
+                <li>Cannot exceed declarer score on a made contract</li>
               </ul>
-              
-              <h3>Defender Rewards</h3>
+
+              <h3>Defeated Contracts — Defender Score</h3>
               <ul>
-                <li>Setting contracts with HCP disadvantage</li>
-                <li>Limiting overtricks when possible</li>
+                <li><strong>Base:</strong> 30 points</li>
+                <li><strong>Strong declarer went down:</strong> +1.5 pts per surplus point</li>
+                <li><strong>Weak declarer went down:</strong> −0.75 pts per deficit point</li>
+                <li><strong>Down 1:</strong> +2 pts | <strong>Down 2:</strong> +5 pts</li>
+                <li><strong>Down 3:</strong> +8 pts | <strong>Down 4+:</strong> +10 pts (capped)</li>
+                <li><strong>Defeated game:</strong> +3 pts</li>
+                <li><strong>Defeated slam:</strong> +6 pts</li>
+                <li><strong>Doubled contracts:</strong> defeat margin bonus halved</li>
+                <li><strong>Redoubled contracts:</strong> defeat margin bonus quartered</li>
+              </ul>
+
+              <h3>Defeated Contracts — Declarer Consolation</h3>
+              <ul>
+                <li>Only awarded if declarer HCP was below expected</li>
+                <li>0.5 pts per deficit point (maximum 5 pts)</li>
               </ul>
             </div>
           )}
-          
+
           {/* Examples Tab */}
           {activeTab === 'examples' && (
             <div className="examples-tab">
-              <h3>Made with HCP Advantage</h3>
+              <h3>Strong Hand Makes Game</h3>
               <div className="example-scenario">
-                <p><strong>4♠ by N, 28 HCP (70%)</strong></p>
+                <p><strong>4♥ by S, 28 HCP (surplus 4)</strong></p>
                 <p>Made exactly (10 tricks)</p>
               </div>
               <div className="example-calculation">
-                <p>Base: 21 pts → HCP adj: -2 → Performance: -10 → <strong>Final: 9 pts</strong></p>
+                <p>Base 30 − HCP penalty 6 + Game 3 = <strong>Declarer: 27 pts</strong></p>
+                <p>Defenders: 4 surplus × 1.0 = <strong>4 pts</strong></p>
               </div>
-              
-              <h3>Failed with HCP Disadvantage</h3>
+
+              <h3>Weak Hand Makes Game</h3>
               <div className="example-scenario">
-                <p><strong>3NT by E, 18 HCP (45%)</strong></p>
-                <p>Down 1 (8 tricks)</p>
+                <p><strong>4♥ by S, 20 HCP (deficit 4)</strong></p>
+                <p>Made exactly (10 tricks)</p>
               </div>
               <div className="example-calculation">
-                <p>Defenders: 11 pts → Declarer consolation: 3 pts</p>
+                <p>Base 30 + HCP bonus 6 + Game 3 = <strong>Declarer: 39 pts</strong></p>
+                <p>Defenders: <strong>0 pts</strong></p>
               </div>
-              
-              <h3>Overtricks</h3>
+
+              <h3>Weak Hand Makes Part Score</h3>
               <div className="example-scenario">
-                <p><strong>2♥ by S, 23 HCP, +2</strong></p>
-                <p>Made +2 (10 tricks)</p>
+                <p><strong>2♥ by S, 16 HCP (deficit 5)</strong></p>
+                <p>Made exactly (8 tricks)</p>
               </div>
               <div className="example-calculation">
-                <p>Base: 6 pts → Performance: +8 → Ambition: -5 → <strong>Final: 9 pts</strong></p>
+                <p>Base 30 + HCP bonus 7.5 + Weak bonus 3 = <strong>Declarer: 40 pts</strong></p>
+                <p>A weak hand making a part score beats a strong hand making game!</p>
+              </div>
+
+              <h3>Strong Hand Goes Down</h3>
+              <div className="example-scenario">
+                <p><strong>4♥ by S, 28 HCP (surplus 4), Down 2</strong></p>
+              </div>
+              <div className="example-calculation">
+                <p>Base 30 + surplus 6 + Down 2 (5) + Game 3 = <strong>Defenders: 44 pts</strong></p>
+                <p>Declarer consolation: <strong>0 pts</strong></p>
+              </div>
+
+              <h3>Weak Slam — Highest Score</h3>
+              <div className="example-scenario">
+                <p><strong>7♠ by N, 28 HCP (deficit 4)</strong></p>
+                <p>Made exactly (13 tricks)</p>
+              </div>
+              <div className="example-calculation">
+                <p>Base 30 + HCP bonus 6 + Grand Slam 15 = <strong>Declarer: 51 pts</strong></p>
+                <p>A weak hand making a grand slam is the highest scoring outcome.</p>
               </div>
             </div>
           )}
