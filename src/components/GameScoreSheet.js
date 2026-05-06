@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import TrialPopup from './TrialPopup'; // Add this import
+import TrialPopup from './TrialPopup';
+import BonusBridgeExplanation from './BonusBridgeExplanation';
 import './GameScoreSheet.css';
 
 /**
@@ -25,6 +26,7 @@ const GameScoreSheet = ({ gameState, onNewGame, trialManager }) => {
   const [showNewGameConfirm, setShowNewGameConfirm] = useState(false);
   const [showTrialPopup, setShowTrialPopup] = useState(false);
   const [trialType, setTrialType] = useState('extension');
+  const [showExplanation, setShowExplanation] = useState(false);
   
   useEffect(() => {
     // Scroll to top when component mounts
@@ -567,7 +569,7 @@ const GameScoreSheet = ({ gameState, onNewGame, trialManager }) => {
                     <span>Winner: </span>
                     <span className="winner-name">{winners.bonusWinner}</span>
                   </div>
-                  <button className="info-button" onClick={() => alert("Bonus Bridge scoring rewards both declarers and defenders based on high card points, distribution, and performance relative to expectations.")}>
+                  <button className="info-button" onClick={() => setShowExplanation(true)}>
                     How Bonus Scoring Works
                   </button>
                 </div>
@@ -1036,73 +1038,56 @@ const GameScoreSheet = ({ gameState, onNewGame, trialManager }) => {
                     <span className="detail-value">{selectedDeal.handAnalysis.totalHCP || 0}</span>
                   </div>
                   <div className="detail-item">
-                    <span className="detail-label">HCP Advantage:</span>
+                    <span className="detail-label">Expected HCP:</span>
+                    <span className="detail-value">{selectedDeal.handAnalysis.expectedHCP || 0}</span>
+                  </div>
+                  <div className="detail-item">
+                    <span className="detail-label">HCP Surplus/Deficit:</span>
                     <span className="detail-value">
-                      {selectedDeal.handAnalysis.hcpAdvantage || 0}% to {selectedDeal.handAnalysis.advantageSide || 'None'}
+                      {selectedDeal.handAnalysis.hcpSurplus > 0
+                        ? `+${selectedDeal.handAnalysis.hcpSurplus} (strong hand)`
+                        : selectedDeal.handAnalysis.hcpDeficit > 0
+                          ? `-${selectedDeal.handAnalysis.hcpDeficit} (weak hand)`
+                          : 'Balanced'}
                     </span>
                   </div>
                   <div className="detail-item">
                     <span className="detail-label">Distribution:</span>
                     <span className="detail-value">
-                      {selectedDeal.handAnalysis.singletons || 0} singletons, 
-                      {selectedDeal.handAnalysis.voids || 0} voids,
+                      {selectedDeal.handAnalysis.singletons || 0} singletons,{' '}
+                      {selectedDeal.handAnalysis.voids || 0} voids,{' '}
                       {selectedDeal.handAnalysis.longSuits || 0} long suits
                     </span>
                   </div>
-                  <div className="detail-item">
-                    <span className="detail-label">Expected HCP:</span>
-                    <span className="detail-value">{selectedDeal.handAnalysis.expectedHCP || 0}</span>
-                  </div>
-                  <div className="detail-item">
-                    <span className="detail-label">Expected Tricks:</span>
-                    <span className="detail-value">{selectedDeal.handAnalysis.handExpectedTricks || 0}</span>
-                  </div>
                 </div>
-                
+
                 <h4>Bonus Score Calculation</h4>
                 <ul className="calculation-steps">
                   {selectedDeal.result >= 0 ? (
-                    // For made contracts
                     <>
-                      <li>
-                        Raw Score / 20: {((selectedDeal.handAnalysis.rawScore || 0) / 20).toFixed(1)} points
-                      </li>
-                      <li>
-                        HCP Adjustment: {(selectedDeal.handAnalysis.hcpAdjustment || 0).toFixed(2)} points
-                      </li>
-                      <li>
-                        Performance Variance: {(selectedDeal.handAnalysis.performanceVariance || 0)} tricks
-                      </li>
-                      <li>
-                        Contract Type: {selectedDeal.handAnalysis.contractTypeDescription || ''}
-                      </li>
-                      <li>
-                        Distribution Adjustment: {(selectedDeal.handAnalysis.distributionAdjustment || 0).toFixed(1)} points
-                      </li>
+                      <li>Base Score: {selectedDeal.handAnalysis.base || 30} points</li>
+                      <li>HCP Adjustment: {(selectedDeal.handAnalysis.rawHcpAdj || 0).toFixed(1)} points</li>
+                      <li>Level Bonus ({selectedDeal.handAnalysis.levelDescription || 'Part score'}): +{(selectedDeal.handAnalysis.levelBonus || 0).toFixed(1)} points</li>
+                      {selectedDeal.handAnalysis.weakPartScoreBonus > 0 && (
+                        <li>Weak Hand Part Score Bonus: +{selectedDeal.handAnalysis.weakPartScoreBonus} points</li>
+                      )}
+                      <li>Overtrick Bonus: +{(selectedDeal.handAnalysis.overtrickBonus || 0).toFixed(1)} points</li>
+                      <li>Distribution Penalty: -{(selectedDeal.handAnalysis.distPenalty || 0).toFixed(1)} points</li>
+                      <li>Declarer Final: {selectedDeal.handAnalysis.declarerFinal || 0} points</li>
+                      <li>Defender Reward: {(selectedDeal.handAnalysis.defenderBase || 0).toFixed(1)} points</li>
                     </>
                   ) : (
-                    // For defeated contracts
                     <>
-                      <li>
-                        Base Penalty: {(selectedDeal.handAnalysis.basePenalty || 0).toFixed(1)} points
-                      </li>
-                      <li>
-                        Level Penalties: {(selectedDeal.handAnalysis.levelPenalties || 0).toFixed(1)} points
-                      </li>
-                      <li>
-                        Performance Bonus: {(selectedDeal.handAnalysis.performanceBonus || 0).toFixed(1)} points
-                      </li>
-                      <li>
-                        Declarer Consolation: {(selectedDeal.handAnalysis.consolationPoints || 0).toFixed(1)} points
-                      </li>
+                      <li>Base Score (Defenders): {selectedDeal.handAnalysis.base || 30} points</li>
+                      <li>HCP Adjustment: {(selectedDeal.handAnalysis.rawHcpAdj || 0).toFixed(1)} points</li>
+                      <li>Defeat Margin ({selectedDeal.handAnalysis.defeatDescription || ''}): +{(selectedDeal.handAnalysis.defeatMarginBonus || 0).toFixed(1)} points</li>
+                      <li>Contract Level Bonus: +{(selectedDeal.handAnalysis.defeatedLevelBonus || 0).toFixed(1)} points</li>
+                      <li>Defender Final: {selectedDeal.handAnalysis.defenderFinal || 0} points</li>
+                      <li>Declarer Consolation: {(selectedDeal.handAnalysis.consolationPoints || 0).toFixed(1)} points</li>
                     </>
                   )}
-                  <li>
-                    Final NS Bonus: {selectedDeal.bonusNsPoints || 0} points
-                  </li>
-                  <li>
-                    Final EW Bonus: {selectedDeal.bonusEwPoints || 0} points
-                  </li>
+                  <li><strong>Final NS Bonus: {selectedDeal.bonusNsPoints || 0} points</strong></li>
+                  <li><strong>Final EW Bonus: {selectedDeal.bonusEwPoints || 0} points</strong></li>
                 </ul>
               </div>
             )}
@@ -1175,6 +1160,11 @@ const GameScoreSheet = ({ gameState, onNewGame, trialManager }) => {
           <div>trialManager: {trialManager ? 'exists' : 'null'}</div>
         </div>
       )}
+      {/* Bonus Bridge Explanation Popup */}
+      {showExplanation && (
+        <BonusBridgeExplanation onClose={() => setShowExplanation(false)} />
+      )}
+
     </div>
   );
 };
