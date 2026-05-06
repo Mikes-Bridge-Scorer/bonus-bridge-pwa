@@ -574,6 +574,52 @@ const GameScoreSheet = ({ gameState, onNewGame, trialManager }) => {
               </div>
             </div>
             
+            {/* Percentage Comparison Table */}
+            {(() => {
+              const partyTotal = scores.partyNS + scores.partyEW;
+              const bonusTotal = scores.bonusNS + scores.bonusEW;
+              const partyNSPct = partyTotal > 0 ? ((scores.partyNS / partyTotal) * 100).toFixed(1) : 0;
+              const partyEWPct = partyTotal > 0 ? ((scores.partyEW / partyTotal) * 100).toFixed(1) : 0;
+              const bonusNSPct = bonusTotal > 0 ? ((scores.bonusNS / bonusTotal) * 100).toFixed(1) : 0;
+              const bonusEWPct = bonusTotal > 0 ? ((scores.bonusEW / bonusTotal) * 100).toFixed(1) : 0;
+              const partyMargin = Math.abs(partyNSPct - partyEWPct).toFixed(1);
+              const bonusMargin = Math.abs(bonusNSPct - bonusEWPct).toFixed(1);
+              return (
+                <div className="stats-section">
+                  <h3>Score Comparison</h3>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
+                    <thead>
+                      <tr style={{ backgroundColor: '#f0f4f8' }}>
+                        <th style={{ padding: '8px 6px', textAlign: 'left', color: '#1e5c8b' }}>Team</th>
+                        <th style={{ padding: '8px 6px', textAlign: 'center', color: '#1e5c8b' }}>Party Bridge</th>
+                        <th style={{ padding: '8px 6px', textAlign: 'center', color: '#28a745' }}>Bonus Bridge</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr style={{ borderBottom: '1px solid #eee' }}>
+                        <td style={{ padding: '8px 6px', fontWeight: 'bold' }}>North-South</td>
+                        <td style={{ padding: '8px 6px', textAlign: 'center' }}>{scores.partyNS} <span style={{ color: '#666', fontSize: '12px' }}>({partyNSPct}%)</span></td>
+                        <td style={{ padding: '8px 6px', textAlign: 'center' }}>{scores.bonusNS} <span style={{ color: '#666', fontSize: '12px' }}>({bonusNSPct}%)</span></td>
+                      </tr>
+                      <tr style={{ borderBottom: '1px solid #eee' }}>
+                        <td style={{ padding: '8px 6px', fontWeight: 'bold' }}>East-West</td>
+                        <td style={{ padding: '8px 6px', textAlign: 'center' }}>{scores.partyEW} <span style={{ color: '#666', fontSize: '12px' }}>({partyEWPct}%)</span></td>
+                        <td style={{ padding: '8px 6px', textAlign: 'center' }}>{scores.bonusEW} <span style={{ color: '#666', fontSize: '12px' }}>({bonusEWPct}%)</span></td>
+                      </tr>
+                      <tr style={{ backgroundColor: '#f8f9fa' }}>
+                        <td style={{ padding: '8px 6px', fontWeight: 'bold', color: '#1e5c8b' }}>Win Margin</td>
+                        <td style={{ padding: '8px 6px', textAlign: 'center', fontWeight: 'bold' }}>{partyMargin}%</td>
+                        <td style={{ padding: '8px 6px', textAlign: 'center', fontWeight: 'bold', color: '#28a745' }}>{bonusMargin}%</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <p style={{ fontSize: '11px', color: '#888', marginTop: '6px', fontStyle: 'italic' }}>
+                    A smaller Bonus Bridge margin indicates more evenly matched skill than raw scores suggest.
+                  </p>
+                </div>
+              );
+            })()}
+
             {/* Game Statistics */}
             <div className="stats-section">
               <h3>Game Statistics</h3>

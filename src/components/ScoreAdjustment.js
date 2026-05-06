@@ -191,6 +191,7 @@ const ScoreAdjustment = ({ currentDeal, onSaveAdjustment, onCancel }) => {
     const level    = parseInt(contractMatch[1]);
     const suit     = contractMatch[2];
     const declarer = contractMatch[3];
+    const doubled  = contractMatch[4] || '';
 
     const madeContract = currentDeal.result >= 0;
     const isNS         = declarer === 'N' || declarer === 'S';
@@ -304,12 +305,17 @@ const ScoreAdjustment = ({ currentDeal, onSaveAdjustment, onCancel }) => {
       const afterHcp = base + rawHcpAdj;
 
       // Step 3: Defeat Margin Bonus
+      // If doubled/redoubled, halve the margin bonus — the penalty is inflated
+      // by the double itself, not by defensive skill
+      const doubledMultiplier = doubled === 'XX' ? 0.25 : doubled === 'X' ? 0.5 : 1.0;
       let defeatMarginBonus = 0;
       let defeatDescription = '';
       if      (undertricks >= 4) { defeatMarginBonus = SCORING.DEFEAT_DOWN4PLUS; defeatDescription = 'Down 4+'; }
       else if (undertricks === 3) { defeatMarginBonus = SCORING.DEFEAT_DOWN3;    defeatDescription = 'Down 3'; }
       else if (undertricks === 2) { defeatMarginBonus = SCORING.DEFEAT_DOWN2;    defeatDescription = 'Down 2'; }
       else if (undertricks === 1) { defeatMarginBonus = SCORING.DEFEAT_DOWN1;    defeatDescription = 'Down 1'; }
+      defeatMarginBonus = defeatMarginBonus * doubledMultiplier;
+      if (doubled) defeatDescription += doubled === 'XX' ? ' (Redoubled — margin ÷4)' : ' (Doubled — margin ÷2)';
       const afterMargin = afterHcp + defeatMarginBonus;
 
       // Step 4: Contract Level Bonus for defenders
@@ -346,6 +352,7 @@ const ScoreAdjustment = ({ currentDeal, onSaveAdjustment, onCancel }) => {
         afterHcp,
         defeatMarginBonus,
         defeatDescription,
+        doubledMultiplier,
         defeatedLevelBonus,
         defeatedLevelDescription,
         defenderFinal: defenderPoints,
