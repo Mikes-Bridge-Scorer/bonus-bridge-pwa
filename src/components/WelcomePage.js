@@ -112,15 +112,15 @@ const WelcomePage = ({ onStartGame }) => {
         
         {/* Subtitle - More Compact */}
         <p className="app-subtitle">
-          Exciting competitive Bridge for 4 players
+          Skill-based bridge scoring for 4 players — both sides earn points every deal
         </p>
 
         {/* Creator Credits - Compact */}
         <div className="credits-section">
-         <div className="creator-info">
-  <p className="affiliation">ONE TABLE BRIDGE</p>
-  <p className="creator-name">Created By Mike Smith</p>
-</div>
+          <div className="creator-info">
+            <p className="affiliation">ONE TABLE BRIDGE</p>
+            <p className="creator-name">Created By Mike Smith</p>
+          </div>
         </div>
 
         {/* Features Preview - Two Columns with Click Handlers */}

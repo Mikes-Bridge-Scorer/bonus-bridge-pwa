@@ -76,7 +76,7 @@ const BonusBridgeExplanation = ({ onClose }) => {
 
               <h3>Key Features</h3>
               <ul>
-                <li><strong>Vulnerability irrelevant:</strong> We measure skill, not luck of the deal</li>
+                <li><strong>Vulnerability matters for games:</strong> Making a vulnerable game earns a bonus — you took a real risk</li>
                 <li><strong>Both sides score:</strong> Defenders earn points on every deal</li>
                 <li><strong>Contract level rewarded:</strong> Bidding and making slams scores highest</li>
                 <li><strong>Base score 30:</strong> All scores start at 30 and adjust from there</li>
@@ -140,6 +140,7 @@ const BonusBridgeExplanation = ({ onClose }) => {
                 <li><strong>Strong hand (surplus):</strong> −1.5 pts per HCP above expected</li>
                 <li><strong>Weak hand (deficit):</strong> +1.5 pts per HCP below expected</li>
                 <li><strong>Game bonus:</strong> +3 pts</li>
+                <li><strong>Vulnerable game bonus:</strong> +3 pts extra (rewards the risk taken)</li>
                 <li><strong>Small slam bonus:</strong> +8 pts</li>
                 <li><strong>Grand slam bonus:</strong> +15 pts</li>
                 <li><strong>Weak hand part score bonus:</strong> +3 pts (if deficit &gt; 3)</li>
@@ -163,6 +164,7 @@ const BonusBridgeExplanation = ({ onClose }) => {
                 <li><strong>Down 3:</strong> +8 pts | <strong>Down 4+:</strong> +10 pts (capped)</li>
                 <li><strong>Defeated game:</strong> +3 pts</li>
                 <li><strong>Defeated slam:</strong> +6 pts</li>
+                <li><strong>Vulnerable declarer went down:</strong> +2 pts per undertrick (all contracts)</li>
                 <li><strong>Doubled contracts:</strong> defeat margin bonus halved</li>
                 <li><strong>Redoubled contracts:</strong> defeat margin bonus quartered</li>
               </ul>
@@ -178,6 +180,27 @@ const BonusBridgeExplanation = ({ onClose }) => {
           {/* Examples Tab */}
           {activeTab === 'examples' && (
             <div className="examples-tab">
+              <h3>Vulnerable Game Makes</h3>
+              <div className="example-scenario">
+                <p><strong>4♥ by S, 24 HCP (exactly expected), Vulnerable</strong></p>
+                <p>Made exactly (10 tricks)</p>
+              </div>
+              <div className="example-calculation">
+                <p>Base 30 + Game 3 + Vul bonus 3 = <strong>Declarer: 36 pts</strong></p>
+                <p>vs Non-vulnerable same contract: <strong>33 pts</strong></p>
+                <p>The extra 3 points reward the courage to bid game when vulnerable.</p>
+              </div>
+
+              <h3>Vulnerable Contract Goes Down</h3>
+              <div className="example-scenario">
+                <p><strong>2♥ by S, 21 HCP, Vulnerable, Down 2</strong></p>
+              </div>
+              <div className="example-calculation">
+                <p>Base 30 + Down 2 (5) + Vul penalty (2×2=4) = <strong>Defenders: 39 pts</strong></p>
+                <p>vs Non-vulnerable same result: <strong>35 pts</strong></p>
+                <p>Defenders earn more for defeating a vulnerable contract.</p>
+              </div>
+
               <h3>Strong Hand Makes Game</h3>
               <div className="example-scenario">
                 <p><strong>4♥ by S, 28 HCP (surplus 4)</strong></p>
@@ -206,15 +229,6 @@ const BonusBridgeExplanation = ({ onClose }) => {
               <div className="example-calculation">
                 <p>Base 30 + HCP bonus 7.5 + Weak bonus 3 = <strong>Declarer: 40 pts</strong></p>
                 <p>A weak hand making a part score beats a strong hand making game!</p>
-              </div>
-
-              <h3>Strong Hand Goes Down</h3>
-              <div className="example-scenario">
-                <p><strong>4♥ by S, 28 HCP (surplus 4), Down 2</strong></p>
-              </div>
-              <div className="example-calculation">
-                <p>Base 30 + surplus 6 + Down 2 (5) + Game 3 = <strong>Defenders: 44 pts</strong></p>
-                <p>Declarer consolation: <strong>0 pts</strong></p>
               </div>
 
               <h3>Weak Slam — Highest Score</h3>

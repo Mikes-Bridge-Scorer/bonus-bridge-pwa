@@ -70,6 +70,10 @@ const SCORING = {
   CONSOLATION_PER_DEFICIT: 0.5,
   CONSOLATION_MAX: 5,
   CONSOLATION_MIN_DOWN1: 2,   // minimum consolation if down 1 and deficit > threshold
+
+  // Vulnerability bonuses — Version 2.1
+  VUL_GAME_BONUS: 3,          // extra points to declarer for making a vulnerable game
+  VUL_DEFEAT_PER_TRICK: 2,    // extra points to defenders per undertrick when declarer vulnerable
 };
 
 // ─────────────────────────────────────────────────────────────
@@ -198,6 +202,10 @@ const ScoreAdjustment = ({ currentDeal, onSaveAdjustment, onCancel }) => {
     const overtricks   = madeContract ? (currentDeal.result || 0) : 0;
     const undertricks  = madeContract ? 0 : Math.abs(currentDeal.result || 0);
 
+    // Vulnerability — is the declaring side vulnerable?
+    const vulnerable = currentDeal.vulnerable || {};
+    const declarerVulnerable = isNS ? (vulnerable.ns || false) : (vulnerable.ew || false);
+
     // Distribution points
     const distributionPoints = (voids * 3) + (singletons * 2) + longSuits;
 
@@ -255,8 +263,12 @@ const ScoreAdjustment = ({ currentDeal, onSaveAdjustment, onCancel }) => {
       }
       const afterDist = afterOvertricks - distPenalty;
 
-      // Step 7: Declarer Final
-      declarerPoints = Math.max(SCORING.DECLARER_MIN, Math.round(afterDist));
+      // Step 7: Vulnerability Bonus (game contracts only)
+      const vulGameBonus = (isGame && declarerVulnerable) ? SCORING.VUL_GAME_BONUS : 0;
+      const afterVul = afterDist + vulGameBonus;
+
+      // Step 8: Declarer Final
+      declarerPoints = Math.max(SCORING.DECLARER_MIN, Math.round(afterVul));
 
       // Step 8: Defender Score on Made Contract
       let defenderBase = hcpSurplus * SCORING.DEFENDER_REWARD_PER_SURPLUS;
@@ -286,6 +298,8 @@ const ScoreAdjustment = ({ currentDeal, onSaveAdjustment, onCancel }) => {
         weakPartScoreBonus,
         overtrickBonus,
         distPenalty,
+        vulGameBonus,
+        declarerVulnerable,
         declarerFinal: declarerPoints,
         defenderBase,
         defenderOvertrickBonus,
@@ -326,8 +340,12 @@ const ScoreAdjustment = ({ currentDeal, onSaveAdjustment, onCancel }) => {
       else if (isGame)      { defeatedLevelBonus = SCORING.DEFEATED_GAME_BONUS;       defeatedLevelDescription = 'Game'; }
       const afterLevelBonus = afterMargin + defeatedLevelBonus;
 
-      // Step 5: Defender Final
-      defenderPoints = Math.max(SCORING.DEFENDER_MIN, Math.round(afterLevelBonus));
+      // Step 5: Vulnerability Penalty — all contracts when declarer vulnerable
+      const vulDefeatBonus = declarerVulnerable ? (undertricks * SCORING.VUL_DEFEAT_PER_TRICK) : 0;
+      const afterVul = afterLevelBonus + vulDefeatBonus;
+
+      // Step 6: Defender Final
+      defenderPoints = Math.max(SCORING.DEFENDER_MIN, Math.round(afterVul));
 
       // Step 6: Declarer Consolation (weak hand only)
       let consolationPoints = 0;
@@ -355,6 +373,8 @@ const ScoreAdjustment = ({ currentDeal, onSaveAdjustment, onCancel }) => {
         doubledMultiplier,
         defeatedLevelBonus,
         defeatedLevelDescription,
+        vulDefeatBonus,
+        declarerVulnerable,
         defenderFinal: defenderPoints,
         consolationPoints,
         declarerFinal: declarerPoints,

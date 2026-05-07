@@ -276,11 +276,15 @@ const FinalScoreAnalysis = ({
           value: `-${(analysisData.distPenalty || 0).toFixed(1)} points`
         },
         {
-          label: "8. Declarer Final Score:",
+          label: `8. Vulnerability Bonus (${analysisData.declarerVulnerable ? 'Vulnerable game' : 'Not vulnerable'}):`,
+          value: `+${(analysisData.vulGameBonus || 0).toFixed(1)} points`
+        },
+        {
+          label: "9. Declarer Final Score:",
           value: `${analysisData.declarerFinal || 0} points`
         },
         {
-          label: `9. Defender Reward (${analysisData.hcpSurplus || 0} surplus pts × 1.0):`,
+          label: `10. Defender Reward (${analysisData.hcpSurplus || 0} surplus pts × 1.0):`,
           value: `${(analysisData.defenderBase || 0).toFixed(1)} points`
         },
       ];
@@ -320,11 +324,15 @@ const FinalScoreAnalysis = ({
           value: `+${(analysisData.defeatedLevelBonus || 0).toFixed(1)} points`
         },
         {
-          label: "6. Defender Final Score:",
+          label: `6. Vulnerability Penalty (${analysisData.declarerVulnerable ? `Vul — ${analysisData.undertricks} trick(s) × 2` : 'Not vulnerable'}):`,
+          value: `+${(analysisData.vulDefeatBonus || 0).toFixed(1)} points`
+        },
+        {
+          label: "7. Defender Final Score:",
           value: `${analysisData.defenderFinal || 0} points`
         },
         {
-          label: "7. Declarer Consolation (weak hand):",
+          label: "8. Declarer Consolation (weak hand):",
           value: `${(analysisData.consolationPoints || 0).toFixed(1)} points`
         }
       ];
