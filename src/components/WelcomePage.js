@@ -3,6 +3,7 @@ import BonusBridgeExplanation from './BonusBridgeExplanation';
 import PartyBridgeExplanation from './PartyBridgeExplanation';
 import GameAnalysisExplanation from './GameAnalysisExplanation';
 import MobileFriendlyExplanation from './MobileFriendlyExplanation';
+import bonusBridgeLogo from '../bonus-bridge-logo.png';
 import './WelcomePage.css';
 
 const WelcomePage = ({ onStartGame }) => {
@@ -44,67 +45,13 @@ const WelcomePage = ({ onStartGame }) => {
   return (
     <div className="welcome-page">
       <div className="welcome-container">
-        {/* Animated Logo - Smaller */}
+        {/* Logo */}
         <div className={`logo-container ${logoAnimated ? 'animated' : ''}`}>
-          <svg 
-            xmlns="http://www.w3.org/2000/svg" 
-            width="120" 
-            height="120" 
-            viewBox="0 0 100 100"
-            className="app-logo"
-          >
-            <defs>
-              <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#1e5c8b" />
-                <stop offset="50%" stopColor="#3498db" />
-                <stop offset="100%" stopColor="#87CEFA" />
-              </linearGradient>
-              <filter id="glow">
-                <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
-                <feMerge> 
-                  <feMergeNode in="coloredBlur"/>
-                  <feMergeNode in="SourceGraphic"/>
-                </feMerge>
-              </filter>
-            </defs>
-            
-            {/* Background circle */}
-            <circle cx="50" cy="50" r="45" fill="url(#logoGradient)" filter="url(#glow)"/>
-            
-            {/* Playing card suits in corners */}
-            <text x="25" y="30" fontSize="12" fill="red" className="suit-symbol">♥</text>
-            <text x="75" y="30" fontSize="12" fill="black" className="suit-symbol">♠</text>
-            <text x="25" y="80" fontSize="12" fill="red" className="suit-symbol">♦</text>
-            <text x="75" y="80" fontSize="12" fill="black" className="suit-symbol">♣</text>
-            
-            {/* Main "B" letter */}
-            <text 
-              x="50" 
-              y="70" 
-              fontFamily="Georgia, serif" 
-              fontSize="48" 
-              fontWeight="bold" 
-              textAnchor="middle" 
-              fill="white"
-              className="main-letter"
-            >
-              B
-            </text>
-            
-            {/* "BONUS" text */}
-            <text 
-              x="50" 
-              y="25" 
-              fontFamily="Arial, sans-serif" 
-              fontSize="10" 
-              fontWeight="bold" 
-              textAnchor="middle" 
-              fill="white"
-              className="bonus-text"
-            >
-              BONUS
-            </text>
-          </svg>
+          <img 
+            src={bonusBridgeLogo}
+            alt="Bonus Bridge Logo"
+            style={{ width: '120px', height: '120px', borderRadius: '50%', objectFit: 'cover' }}
+          />
         </div>
 
         {/* Main Heading - Smaller */}
