@@ -1,165 +1,120 @@
-/* eslint-disable no-restricted-globals */
+/* =============================================================
+   Bonus Bridge PWA — Service Worker
+   Strategy: fetch asset-manifest.json at install time so we
+   always cache the correct hashed filenames from the CRA build.
+   Version bump here forces the old SW to be replaced.
+   ============================================================= */
 
-// This service worker file should be placed in your public folder
-// IMPORTANT: Update version numbers when releasing new versions
-const CACHE_NAME = 'bonus-bridge-cache-v1.0.3';
-const APP_VERSION = '1.0.3';  // Keep in sync with index.js
+const CACHE_VERSION = 'bonus-bridge-v3';
 
-// Files to cache for offline use - Updated for build output
-const urlsToCache = [
-  '/',
-  '/index.html',
-  '/static/css/main.css',
-  '/static/js/main.js',
-  '/manifest.json',
-  '/favicon.svg',
-  '/logo192.png',
-  '/logo512.png'
+// Static assets that never change names (safe to list explicitly)
+const STATIC_URLS = [
+  './',
+  './index.html',
+  './manifest.json',
+  './asset-manifest.json',
+  './favicon.ico',
+  './logo192.png',
+  './logo512.png',
 ];
 
-// Install handler - cache initial resources
-self.addEventListener('install', event => {
-  console.log('Service Worker: Installing version', APP_VERSION);
-  
-  // Force new service worker to activate immediately
-  self.skipWaiting();
-  
+// ── INSTALL ──────────────────────────────────────────────────
+self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => {
-        console.log('Service Worker: Opened cache');
-        // Try to cache resources, but don't fail if some are missing
-        return Promise.allSettled(
-          urlsToCache.map(url => 
-            cache.add(url).catch(error => {
-              console.warn('Service Worker: Failed to cache', url, error);
-              return null;
-            })
-          )
-        ).then(() => {
-          console.log('Service Worker: Resources cached (with possible warnings)');
-        });
-      })
-      .catch(error => {
-        console.error('Service Worker: Cache opening failed', error);
-      })
-  );
-});
+    (async () => {
+      const cache = await caches.open(CACHE_VERSION);
 
-// Activation handler - clean up old caches
-self.addEventListener('activate', event => {
-  console.log('Service Worker: Activating version', APP_VERSION);
-  
-  const cacheWhitelist = [CACHE_NAME];
-  
-  // Take control of all clients immediately
-  event.waitUntil(
-    Promise.all([
-      // Clean up old caches
-      caches.keys().then(cacheNames => {
-        return Promise.all(
-          cacheNames.map(cacheName => {
-            if (cacheWhitelist.indexOf(cacheName) === -1) {
-              console.log('Service Worker: Deleting old cache', cacheName);
-              return caches.delete(cacheName);
-            }
-          })
+      // 1. Cache the known static assets
+      await cache.addAll(STATIC_URLS);
+
+      // 2. Fetch asset-manifest.json and cache every hashed file it lists
+      try {
+        const manifestResponse = await fetch('./asset-manifest.json');
+        if (!manifestResponse.ok) throw new Error('asset-manifest fetch failed');
+
+        const manifest = await manifestResponse.json();
+
+        // CRA asset-manifest has a "files" map: { "main.css": "/static/...", ... }
+        const hashedUrls = Object.values(manifest.files || manifest);
+
+        // Filter to files hosted on this origin (skip CDN / data URIs)
+        const localUrls = hashedUrls.filter(
+          (url) =>
+            typeof url === 'string' &&
+            !url.startsWith('http') &&
+            !url.startsWith('data:') &&
+            url !== ''
         );
-      }),
-      
-      // Claim all clients
-      self.clients.claim().then(() => {
-        console.log('Service Worker: Claimed all clients');
-        // After claiming clients, send update notification
-        return self.clients.matchAll().then(clients => {
-          return Promise.all(
-            clients.map(client => {
-              return client.postMessage({
-                type: 'APP_UPDATED',
-                version: APP_VERSION
-              });
-            })
-          );
-        });
-      })
-    ])
+
+        await cache.addAll(localUrls);
+        console.log('[SW] Cached', localUrls.length, 'hashed assets from manifest');
+      } catch (err) {
+        console.warn('[SW] Could not cache from asset-manifest.json:', err);
+        // Don't throw — static assets are already cached; app will still work
+      }
+
+      // Activate immediately (don't wait for old tabs to close)
+      self.skipWaiting();
+    })()
   );
 });
 
-// Fetch handler - serve cached content when offline
-self.addEventListener('fetch', event => {
-  // Skip cross-origin requests and non-GET requests
-  if (!event.request.url.startsWith(self.location.origin) || 
-      event.request.method !== 'GET') {
-    return;
-  }
-  
-  // Skip chrome-extension and other non-http requests
-  if (!event.request.url.startsWith('http')) {
-    return;
-  }
-  
-  event.respondWith(
-    caches.match(event.request)
-      .then(response => {
-        // Cache hit - return response
-        if (response) {
-          console.log('Service Worker: Serving from cache:', event.request.url);
-          return response;
-        }
-        
-        // Clone the request because it's a one-time use stream
-        const fetchRequest = event.request.clone();
-        
-        return fetch(fetchRequest)
-          .then(response => {
-            // Check if we received a valid response
-            if (!response || response.status !== 200 || response.type !== 'basic') {
-              return response;
-            }
-            
-            // Clone the response because it's a one-time use stream
-            const responseToCache = response.clone();
-            
-            caches.open(CACHE_NAME)
-              .then(cache => {
-                // Don't cache API requests or similar dynamic content
-                if (!event.request.url.includes('/api/') && 
-                    !event.request.url.includes('sockjs-node')) {
-                  cache.put(event.request, responseToCache);
-                  console.log('Service Worker: Cached new resource:', event.request.url);
-                }
-              });
-              
-            return response;
+// ── ACTIVATE ─────────────────────────────────────────────────
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    (async () => {
+      // Delete all caches that aren't the current version
+      const keys = await caches.keys();
+      await Promise.all(
+        keys
+          .filter((key) => key !== CACHE_VERSION)
+          .map((key) => {
+            console.log('[SW] Deleting old cache:', key);
+            return caches.delete(key);
           })
-          .catch(error => {
-            console.warn('Service Worker: Fetch failed for:', event.request.url, error);
-            
-            // If fetch fails (when offline), try to serve the offline page
-            if (event.request.mode === 'navigate') {
-              return caches.match('/index.html');
-            }
-            
-            // For other requests, just let them fail gracefully
-            throw error;
-          });
-      })
+      );
+      // Take control of all open clients immediately
+      await self.clients.claim();
+    })()
   );
 });
 
-// Listen for messages from clients
-self.addEventListener('message', event => {
-  console.log('Service Worker: Message received', event.data);
-  
-  // Handle skip waiting message (immediate update)
-  if (event.data && event.data.type === 'SKIP_WAITING') {
-    console.log('Service Worker: Skip waiting and activate now');
-    self.skipWaiting();
-  }
-  
-  // Handle version info messages
-  if (event.data && event.data.type === 'VERSION_INFO') {
-    console.log('Service Worker: Received version info', event.data.version);
-  }
+// ── FETCH ────────────────────────────────────────────────────
+self.addEventListener('fetch', (event) => {
+  // Only handle GET requests
+  if (event.request.method !== 'GET') return;
+
+  // Skip cross-origin requests (analytics, etc.)
+  const url = new URL(event.request.url);
+  if (url.origin !== self.location.origin) return;
+
+  event.respondWith(
+    (async () => {
+      // Cache-first strategy: serve from cache, fall back to network
+      const cached = await caches.match(event.request);
+      if (cached) return cached;
+
+      try {
+        const networkResponse = await fetch(event.request);
+
+        // Cache successful GET responses for future offline use
+        if (networkResponse.ok) {
+          const cache = await caches.open(CACHE_VERSION);
+          cache.put(event.request, networkResponse.clone());
+        }
+
+        return networkResponse;
+      } catch {
+        // Offline and not cached — return the app shell so the app still loads
+        const appShell = await caches.match('./index.html');
+        if (appShell) return appShell;
+
+        // Last resort
+        return new Response('Offline — please open the app while connected first', {
+          status: 503,
+          headers: { 'Content-Type': 'text/plain' },
+        });
+      }
+    })()
+  );
 });
