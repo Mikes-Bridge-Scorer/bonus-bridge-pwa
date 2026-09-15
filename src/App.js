@@ -58,25 +58,18 @@ const App = () => {
 
   const handleStartGame = () => {
     setShowWelcome(false);
-    
-    const remainingDeals = trialManager.getRemainingDeals();
-    const stats = trialManager.getStats();
-    const totalDeals = stats?.maxDeals || 50;
-    const dealsPlayed = stats?.dealsPlayed || 0;
-    
-    if (trialManager.isExpired()) {
-      setTrialType('expired');
+
+    const status = trialManager.checkStatus();
+
+    if (status.locked) {
+      setTrialType(status.status === 'annual_expired' ? 'expired' : 'expired');
       setShowTrialPopup(true);
-    } else if (dealsPlayed === 0 && totalDeals <= 50) {
-      setTrialType('info');
-      setShowTrialPopup(true);
-    } else if (remainingDeals <= 10 && remainingDeals > 0) {
-      setTrialType('warning');
-      setShowTrialPopup(true);
-    } else if (trialManager.shouldShowWarning()) {
+    } else if (status.warning) {
       setTrialType('warning');
       setShowTrialPopup(true);
     }
+    // Otherwise: trial/annual/lifetime all fine — go straight into play,
+    // no popup needed.
   };
 
   const handleTrialPopupClose = () => {
