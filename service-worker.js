@@ -1,11 +1,14 @@
 /* =============================================================
-   Bonus Bridge PWA — Service Worker
-   Strategy: fetch asset-manifest.json at install time so we
-   always cache the correct hashed filenames from the CRA build.
-   Version bump here forces the old SW to be replaced.
+   Bonus Bridge PWA — Service Worker (v4)
+   Strategy change: network-first for everything, falling back to
+   cache only when offline. This means future deploys just work —
+   you no longer need to remember to bump CACHE_VERSION every time
+   you push a change. (The old cache-first strategy silently served
+   stale JS/HTML forever, since the browser only reinstalls a
+   service worker when this file's own content changes.)
    ============================================================= */
 
-const CACHE_VERSION = 'bonus-bridge-v3';
+const CACHE_VERSION = 'bonus-bridge-v4';
 
 // Static assets that never change names (safe to list explicitly)
 const STATIC_URLS = [
@@ -24,20 +27,23 @@ self.addEventListener('install', (event) => {
     (async () => {
       const cache = await caches.open(CACHE_VERSION);
 
-      // 1. Cache the known static assets
-      await cache.addAll(STATIC_URLS);
+      // Cache the known static assets as an offline fallback only —
+      // these are no longer served cache-first, see fetch handler below
+      try {
+        await cache.addAll(STATIC_URLS);
+      } catch (err) {
+        console.warn('[SW] Could not pre-cache static assets:', err);
+      }
 
-      // 2. Fetch asset-manifest.json and cache every hashed file it lists
+      // Fetch asset-manifest.json and cache every hashed file it lists,
+      // again purely as an offline fallback
       try {
         const manifestResponse = await fetch('./asset-manifest.json');
         if (!manifestResponse.ok) throw new Error('asset-manifest fetch failed');
 
         const manifest = await manifestResponse.json();
-
-        // CRA asset-manifest has a "files" map: { "main.css": "/static/...", ... }
         const hashedUrls = Object.values(manifest.files || manifest);
 
-        // Filter to files hosted on this origin (skip CDN / data URIs)
         const localUrls = hashedUrls.filter(
           (url) =>
             typeof url === 'string' &&
@@ -50,7 +56,6 @@ self.addEventListener('install', (event) => {
         console.log('[SW] Cached', localUrls.length, 'hashed assets from manifest');
       } catch (err) {
         console.warn('[SW] Could not cache from asset-manifest.json:', err);
-        // Don't throw — static assets are already cached; app will still work
       }
 
       // Activate immediately (don't wait for old tabs to close)
@@ -80,6 +85,10 @@ self.addEventListener('activate', (event) => {
 });
 
 // ── FETCH ────────────────────────────────────────────────────
+// Network-first: always try to get the freshest version from the
+// server. Only fall back to the offline cache if the network fails
+// (i.e. genuinely offline). This means new deploys are picked up
+// immediately on next load, with no manual version-bumping needed.
 self.addEventListener('fetch', (event) => {
   // Only handle GET requests
   if (event.request.method !== 'GET') return;
@@ -90,14 +99,11 @@ self.addEventListener('fetch', (event) => {
 
   event.respondWith(
     (async () => {
-      // Cache-first strategy: serve from cache, fall back to network
-      const cached = await caches.match(event.request);
-      if (cached) return cached;
-
       try {
         const networkResponse = await fetch(event.request);
 
-        // Cache successful GET responses for future offline use
+        // Keep the offline-fallback cache up to date with whatever
+        // we just successfully fetched
         if (networkResponse.ok) {
           const cache = await caches.open(CACHE_VERSION);
           cache.put(event.request, networkResponse.clone());
@@ -105,11 +111,15 @@ self.addEventListener('fetch', (event) => {
 
         return networkResponse;
       } catch {
-        // Offline and not cached — return the app shell so the app still loads
+        // Offline — fall back to whatever we have cached
+        const cached = await caches.match(event.request);
+        if (cached) return cached;
+
+        // Not cached either — fall back to the app shell so the app
+        // still loads in some form
         const appShell = await caches.match('./index.html');
         if (appShell) return appShell;
 
-        // Last resort
         return new Response('Offline — please open the app while connected first', {
           status: 503,
           headers: { 'Content-Type': 'text/plain' },
